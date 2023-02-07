@@ -5,7 +5,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
-import { Object3D } from 'three';
+import { Object3D, Vector3 } from 'three';
+import { WeatherEnergyService } from '../services/weather-energy-service/weather-energy.service';
 
 
 @Component({
@@ -52,6 +53,7 @@ export class MainSceneComponent implements OnInit, AfterViewInit {
     // this.controls.autoRotate = true;
     this.controls.enableZoom = true;
     this.controls.enablePan = true;
+    // this.controls.target = new Vector3(0, 0, 0);
     this.controls.update();
   };
 
@@ -91,6 +93,8 @@ export class MainSceneComponent implements OnInit, AfterViewInit {
     this.raycastingSetup();
     // Object clicking
     this.objectClickSetup();
+
+    
     
   }
 
@@ -183,7 +187,7 @@ export class MainSceneComponent implements OnInit, AfterViewInit {
     }());
   }
 
-  constructor() { }
+  constructor(private weatherEnergyService: WeatherEnergyService) { }
 
   ngOnInit(): void {
 

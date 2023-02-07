@@ -8,6 +8,7 @@ import { SolarPanelViewComponent } from './solar-panel-view/solar-panel-view.com
 import { ResultViewComponent } from './result-view/result-view.component';
 import { LaunchViewComponent } from './launch-view/launch-view.component';
 import { ServerViewComponent } from './server-view/server-view.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -16,11 +17,12 @@ import { ServerViewComponent } from './server-view/server-view.component';
     SolarPanelViewComponent,
     ResultViewComponent,
     LaunchViewComponent,
-    ServerViewComponent
+    ServerViewComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

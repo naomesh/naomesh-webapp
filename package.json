@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
     "@types/three": "^0.146.0",
+    "chart.js": "^4.2.0",
     "rxjs": "~7.5.0",
     "three": "^0.146.0",
     "three-addons": "^1.2.0",
