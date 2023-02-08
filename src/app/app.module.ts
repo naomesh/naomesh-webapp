@@ -9,11 +9,13 @@ import { ResultViewComponent } from './result-view/result-view.component';
 import { LaunchViewComponent } from './launch-view/launch-view.component';
 import { ServerViewComponent } from './server-view/server-view.component';
 import { HttpClientModule } from '@angular/common/http';
+import { BackgroundSceneComponent } from './background-view/background-scene.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainSceneComponent,
+    BackgroundSceneComponent,
     SolarPanelViewComponent,
     ResultViewComponent,
     LaunchViewComponent,
