@@ -1,1 +1,63 @@
-<p>launch-view works!</p>
+<div class="popup-container">
+    <div class="p-3 w-full">
+        <h1>Lanceur</h1>
+        <button class="close-button">╳</button>
+
+        <div class="bumped rounded-xl my-3 flex flex-row">
+
+            <div class="p-5">
+              <h2>Déposer les images</h2>
+
+              <div class="w-full bg-gray-200 rounded-xl mt-5 pressed overflow-auto">
+                  <div class="flex flex-wrap justify-items-center gap-0 h-[55vh]">
+
+                      <div *ngFor="let i of [0,1,2,3,4,5,6,7,8]" class="bumped relative m-2 h-[140px] w-[200px] rounded-lg overflow-hidden">
+                          <img class="object-fill h-full" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Orange-Fruit-Pieces.jpg/1200px-Orange-Fruit-Pieces.jpg" alt="" />
+                          <div class="flex bg-white absolute w-full bottom-0 left-0 p-1">
+                              <p class="w-full text-center">100% - orange.png</p>
+                              <button class="">╳</button>
+                          </div>
+                      </div>
+
+                      <div class="bumped relative m-2 h-[140px] w-[200px] rounded-lg overflow-hidden">
+                          <button class="w-full h-full p-6 pt-10">
+                              <p class="text-3xl"> + </p>
+                              <p class="text-sm"> Glisser déposer ou cliquer ici </p>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="p-2 text-gray-600">
+                  Taille totale: 100Mo, 1h
+              </div>
+            </div>
+
+            <div class="p-5 flex flex-col h-[65vh] overflow-auto">
+                <p class="text-lg">Politique de la tâche</p>
+                <label class="text-sm py-3">
+                  <div class="flex">
+                    <span class="material-icons text-3xl text-lime-500"> nature </span>
+                    <span class="font-bold text-lg p-1">Priorité</span>
+                  </div>
+                  <input type="range" min="0" max="2" class="w-full input-range" />
+                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. </p>
+                </label>
+
+                <label class="text-sm py-3">
+                  <div class="flex">
+                    <span class="material-icons text-3xl text-yellow-500"> bolt </span>
+                    <span class="font-bold text-lg p-1">Qualité</span>
+                  </div>
+                    <input type="range" min="0" max="2" class="w-full input-range" />
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. </p>
+                </label>
+            </div>
+        </div>
+
+        <button class="bumped bg-gray-100 rounded-full w-full py-2 text-xl flex justify-center">
+          <span class="p-0.5 font-bold">Téléverser</span>
+					<i class="material-icons !text-2xl px-2">send</i>
+        </button>
+    </div>
+</div>
