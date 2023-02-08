@@ -1,4 +1,84 @@
-html, body, app-root {
-    margin: 0;
-    padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;400;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  html, body, app-root {
+      @apply m-0 p-0;
+  }
+
+  .popup-container {
+      @apply absolute w-screen h-auto p-10;
+  }
+
+  .popup-container > div {
+      @apply relative bg-gray-100 text-gray-700 bg-opacity-95 w-full h-full rounded-xl px-7 py-5
+  }
+
+  .bumped {
+      box-shadow: -5px -5px 9px rgba(255,255,255,0.45),
+                  5px 5px 9px rgba(94,104,121,0.3);
+  }
+
+  .pressed {
+      box-shadow: inset -5px -5px 9px rgba(255,255,255,0.45),
+                  inset 5px 5px 9px rgba(94,104,121,0.3);
+  }
+
+  h1 {
+      @apply text-2xl;
+  }
+
+  h2 {
+      @apply text-xl;
+  }
+
+  .close-button {
+      @apply absolute right-7 top-5 text-2xl;
+  }
+
+
+.input-range {
+  @apply my-3 rounded-full h-2;
+  -webkit-appearance: none;
+  background-color: rgb(224, 222, 222);
+  cursor: pointer;
+}
+
+.input-range::-webkit-slider-thumb {
+  @apply bumped bg-gray-100 rounded-full w-5 h-5;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.input-range::-moz-range-thumb {
+  @apply bumped bg-gray-100 rounded-full w-5 h-5;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+	::-webkit-scrollbar {
+		width: 7px;
+		height: 7px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		@apply rounded-full bg-white;
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		@apply bg-gray-300;
+	}
 }
