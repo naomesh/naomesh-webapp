@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import * as ApexCharts from 'apexcharts'
 
 @Component({
   selector: 'app-server-view',
@@ -10,6 +11,34 @@ export class ServerViewComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    const ctx = document.getElementById('chart-server') as HTMLCanvasElement;
+
+    var chart = new ApexCharts(ctx, {
+      chart: {
+        toolbar: {
+          show: false
+        },
+        width: '100%',
+        height: "400px",
+        type: 'area',
+      },
+      dataLabels: {
+        enabled: false
+      },
+      colors: ["#fbbf24"],
+      stroke: {
+        curve: 'smooth',
+      },
+      series: [{
+        name: 'sales',
+        data: [30,40,35,50,49,60,70,91,125]
+      }],
+      xaxis: {
+        categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
+      }
+    });
+
+    chart.render();
   }
 
 }

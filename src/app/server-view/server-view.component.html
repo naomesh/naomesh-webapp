@@ -1,1 +1,58 @@
-<p>server-view works!</p>
+<div class="popup-container">
+  <div class="p-3 w-full">
+      <h1>Serveurs</h1>
+      <button class="close-button">╳</button>
+
+      <div class="bumped rounded-xl my-3 flex flex-row">
+
+          <div class="p-5 w-[60%]">
+            <h2>Liste des tâches</h2>
+
+            <div class="block overflow-auto mt-5 w-full h-[65vh]">
+              <table class="w-full">
+                <thead class="sticky top-0 bg-gray-100 bumped">
+                  <tr>
+                    <th>Etat</th>
+                    <th>Noeud</th>
+                    <th>Photos</th>
+                    <th>Durée</th>
+                    <th>Politique</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let i of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" class="w-full border-t-[1px] border-gray-300">
+                    <td>
+                      <i class="material-icons text-3xl">play_arrow</i>
+                    </td>
+                    <td>ecotype-{{i}}</td>
+                    <td>x10 photos</td>
+                    <td>40:30</td>
+                    <td class="text-center font-2xl text-lime-500">
+                      <i class="material-icons">energy_savings_leaf</i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="bg-gray-200 text-xs p-1 bumped">20 tasks running</div>
+          </div>
+
+          <div class="p-5 flex flex-col overflow-auto w-full">
+              <h2>Détails de la tâche</h2>
+
+              <div class="pt-5 bumped rounded-xl p-5 bg-gray-100">
+                <p class="text-gray-500">Server:</p>
+                <p class="font-bold text-2xl mt-[-10px]">ecotype-0</p>
+
+                <div class="pushed bg-gray-200 p-5 rounded-lg text-gray-500 my-10">
+                  Details server: TODO
+                </div>
+
+                <p class="text-gray-500">Consommation en temps réel (KWh)</p>
+                <div class="max-h-[500px]" id="chart-server"></div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
