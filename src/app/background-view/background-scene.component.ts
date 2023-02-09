@@ -60,7 +60,7 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     this.controls.enableRotate = true
     this.controls.enableZoom = true
     this.controls.maxPolarAngle = Math.PI /2.5
-    this.controls.enablePan = true;
+    this.controls.enablePan = false;
     this.controls.target.set( 3, 0, -18 );
     this.controls.maxDistance = 60.0
     this.controls.minDistance = 10.0
@@ -80,7 +80,7 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     dracoLoader.setDecoderConfig({ type: 'js' });
 
     this.loaderGLTF.setDRACOLoader(dracoLoader);
-    this.loaderGLTF.load('assets/gtlf/test04.glb', (gltf: GLTF) => {
+    this.loaderGLTF.load('assets/gtlf/main_scene.glb', (gltf: GLTF) => {
       this.model = gltf.scene;
       this.model.children.forEach((child: THREE.Object3D<THREE.Event>) => {
         if (child.name === '1_LANCEUR' || child.name === '2_PANNEAU_SOLAIRE' || child.name === '3_SERVEURS' || child.name === '4_RESULTAT'){

@@ -1,6 +1,14 @@
 import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router  } from '@angular/router';
 
+enum Route {
+  HOME = 'home',
+  SERVER = 'server',
+  LAUNCH = 'launch',
+  PANELS = 'panels',
+  RESULT = 'result'
+}
+
 @Component({
   selector: 'app-main-scene',
   templateUrl: './main-scene.component.html',
@@ -8,7 +16,7 @@ import { ActivatedRoute, Router  } from '@angular/router';
 })
 export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  public page: string = "";
+  public page: Route = Route.HOME;
   private sub: any;
 
   constructor(private route: ActivatedRoute, private router: Router) {}
@@ -17,6 +25,26 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
     this.sub = this.route.params.subscribe(params => {
        this.page = params['page'];
     });
+  }
+
+  pageIsHome(): boolean {
+    return this.page == Route.HOME
+  }
+
+  pageIsServer(): boolean {
+    return this.page == Route.SERVER
+  }
+
+  pageIsLaunch(): boolean {
+    return this.page == Route.LAUNCH
+  }
+
+  pageIsPanels(): boolean {
+    return this.page == Route.PANELS
+  }
+
+  pageIsResult(): boolean {
+    return this.page == Route.RESULT
   }
 
   ngAfterViewInit(): void {
@@ -28,19 +56,27 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickLauncher(): void {
-    this.router.navigate(['/scene/launch'])
+    if (this.pageIsHome()) {
+      this.router.navigate(['/scene/launch'])
+    }
   }
 
   clickPanels(): void {
-    this.router.navigate(['/scene/panels'])
+    if (this.pageIsHome()) {
+      this.router.navigate(['/scene/panels'])
+    }
   }
 
   clickServer(): void {
-    this.router.navigate(['/scene/server'])
+    if (this.pageIsHome()) {
+      this.router.navigate(['/scene/server'])
+    }
   }
 
   clickResult(): void {
-    this.router.navigate(['/scene/result'])
+    if (this.pageIsHome()) {
+      this.router.navigate(['/scene/result'])
+    }
   }
 
 }
