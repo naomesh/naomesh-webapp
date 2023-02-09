@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
@@ -7,7 +7,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { Object3D } from 'three';
 import { WeatherEnergyService } from '../services/weather-energy-service/weather-energy.service';
 
-import { EffectComposer, RenderPass } from "postprocessing";
+import { EffectComposer, RenderPass, BlendFunction, EffectPass, SMAAEffect, EdgeDetectionMode, PredicationMode, SMAAPreset, DepthOfFieldEffect, DepthEffect, VignetteEffect } from "postprocessing";
 
 
 @Component({
@@ -19,6 +19,11 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
 
   @ViewChild('canvas') private canvasRef!: ElementRef;
 
+  @Output() clickLauncherEvent = new EventEmitter<void>();
+  @Output() clickPanelsEvent = new EventEmitter<void>();
+  @Output() clickServerEvent = new EventEmitter<void>();
+  @Output() clickResultEvent = new EventEmitter<void>();
+
   //* Stage Properties
 
   //? Scene properties
@@ -27,6 +32,8 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
   private controls!: OrbitControls;
 
   private model: any;
+
+  private dragging: boolean = false;
 
   //? Helper Properties (Private Properties);
 
@@ -53,16 +60,18 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     this.controls.enableRotate = true
     this.controls.enableZoom = true
     this.controls.maxPolarAngle = Math.PI /2.5
-    this.controls.enableZoom = true;
     this.controls.enablePan = true;
     this.controls.target.set( 3, 0, -18 );
+    this.controls.maxDistance = 60.0
+    this.controls.minDistance = 10.0
     this.controls.update();
   };
 
   private createScene() {
     // Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#c8f0f9');
+    this.scene.background = new THREE.Color('#96d2ff');
+    this.scene.fog = new THREE.Fog('#96d2ff', 80.0, 95.0 );
 
     // Load GLTF
     const dracoLoader = new DRACOLoader();
@@ -84,14 +93,14 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
 
     // Camera
     this.camera =  new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 500);
-    this.camera.position.set(34, 16, -20);
+    this.camera.position.set(50, 19, -20);
 
     // Light
-    const ambient = new THREE.AmbientLight(0xa0a0fc, 0.82);
+    const ambient = new THREE.AmbientLight('#d0e0c3', 0.9);
     this.scene.add(ambient);
 
-    const sunLight = new THREE.DirectionalLight(0xe8c37b, 1.96);
-    sunLight.position.set(-69,44,14);
+    const sunLight = new THREE.DirectionalLight('#bda47b', 1.3);
+    sunLight.position.set(-69, 44, 14);
     this.scene.add(sunLight);
 
     // Raycasting
@@ -115,6 +124,36 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
   private initPostprocessing() {
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+		const depthOfFieldEffect = new DepthOfFieldEffect(this.camera, {
+			focusDistance: 40.0,
+			focalLength: 0.001,
+			bokehScale: 0.1,
+			height: 500
+		});
+
+		const vignetteEffect = new VignetteEffect({
+			eskil: false,
+			offset: 0.35,
+			darkness: 0.5
+		});
+
+    const smaaEffect = new SMAAEffect({
+      // blendFunction: BlendFunction.NORMAL,
+      preset: SMAAPreset.ULTRA,
+      edgeDetectionMode: EdgeDetectionMode.COLOR,
+      predicationMode: PredicationMode.DEPTH
+    });
+
+		const effectPass = new EffectPass(
+			this.camera,
+      // depthOfFieldEffect,
+			vignetteEffect,
+      smaaEffect
+		);
+
+
+		this.composer.addPass(effectPass);
   }
 
   private raycastingSetup() {
@@ -155,24 +194,36 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
 
   private objectClickSetup() {
 
-    const onClick = (event: any) => {
-      if(this.intersectedObject){
-          // cameraSmoothLookAt(this.intersectedObject)
-          // console.log("click on intersected");
-          // console.log(this.intersectedObject);
-          // console.log(this.getParent(this.intersectedObject));
-      }
+    window.addEventListener('mousedown', () => { this.dragging = false })
+    window.addEventListener('mousemove', () => { this.dragging = true })
+    window.addEventListener('mouseup', () => {
+      if (!this.dragging && this.intersectedObject){
+        switch(this.getParent(this.intersectedObject)) {
+          case '1_LANCEUR': {
+            this.clickLauncherEvent.emit();
+          } break;
+          case '2_PANNEAU_SOLAIRE': {
+            this.clickPanelsEvent.emit();
+          } break;
+          case '3_SERVEURS': {
+            this.clickServerEvent.emit();
+          } break;
+          case '4_RESULTAT': {
+            this.clickResultEvent.emit();
+          } break;
+          default: break;
+        }
     }
-
-    window.addEventListener('click', onClick);
-  }
+  });
+}
 
   private getParent(object: any) {
     let name = '';
     let found = false;
     while (!found) {
+      const objectNames = ['1_LANCEUR', '2_PANNEAU_SOLAIRE', '3_SERVEURS', '4_RESULTAT'];
       let parentObject = object.parent;
-      if (parentObject.name === '1_LANCEUR' || parentObject.name === '2_PANNEAU_SOLAIRE' || parentObject.name === '3_SERVEURS' || parentObject.name === '4_RESULTAT'){
+      if (objectNames.includes(parentObject.name)) {
         found = true;
         name = parentObject.name;
       }

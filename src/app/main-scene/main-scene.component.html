@@ -1,9 +1,14 @@
-<app-background-scene></app-background-scene>
+<app-background-scene
+  (clickLauncherEvent)="clickLauncher()"
+  (clickPanelsEvent)="clickPanels()"
+  (clickServerEvent)="clickServer()"
+  (clickResultEvent)="clickResult()"
+></app-background-scene>
 
-<app-launch-view *ngIf="page == 'launch'"></app-launch-view>
-<app-result-view *ngIf="page == 'result'"></app-result-view>
-<app-server-view *ngIf="page == 'server'"></app-server-view>
-<app-solar-panel-view *ngIf="page == 'panels'"></app-solar-panel-view>
+<app-launch-view *ngIf="page == 'launch'" ></app-launch-view>
+<app-result-view *ngIf="page == 'result'" ></app-result-view>
+<app-server-view *ngIf="page == 'server'" ></app-server-view>
+<app-solar-panel-view *ngIf="page == 'panels'" ></app-solar-panel-view>
 
 <div *ngIf="page == 'home'" class="absolute top-10 right-10 flex flex-col bg-white p-3">
   <a routerLink="/scene/home">home</a>
