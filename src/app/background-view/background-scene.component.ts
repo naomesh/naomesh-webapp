@@ -1,12 +1,13 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import * as THREE from 'three';
-// import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js'
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
-import { Object3D, Vector3 } from 'three';
+import { Object3D } from 'three';
 import { WeatherEnergyService } from '../services/weather-energy-service/weather-energy.service';
+
+import { EffectComposer, RenderPass } from "postprocessing";
 
 
 @Component({
@@ -29,6 +30,8 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
 
   //? Helper Properties (Private Properties);
 
+  private composer: any = undefined;
+
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
   }
@@ -50,10 +53,9 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     this.controls.enableRotate = true
     this.controls.enableZoom = true
     this.controls.maxPolarAngle = Math.PI /2.5
-    // this.controls.autoRotate = true;
     this.controls.enableZoom = true;
     this.controls.enablePan = true;
-    // this.controls.target = new Vector3(0, 0, 0);
+    this.controls.target.set( 3, 0, -18 );
     this.controls.update();
   };
 
@@ -64,8 +66,10 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
 
     // Load GLTF
     const dracoLoader = new DRACOLoader();
+
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
     dracoLoader.setDecoderConfig({ type: 'js' });
+
     this.loaderGLTF.setDRACOLoader(dracoLoader);
     this.loaderGLTF.load('assets/gtlf/test04.glb', (gltf: GLTF) => {
       this.model = gltf.scene;
@@ -77,9 +81,10 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
       console.log(this.model);
       this.scene.add(this.model);
     });
+
     // Camera
     this.camera =  new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 500);
-    this.camera.position.set(34,16,-20);
+    this.camera.position.set(34, 16, -20);
 
     // Light
     const ambient = new THREE.AmbientLight(0xa0a0fc, 0.82);
@@ -91,11 +96,25 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
 
     // Raycasting
     this.raycastingSetup();
+
     // Object clicking
     this.objectClickSetup();
 
+		window.addEventListener( 'resize', () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
 
+      this.renderer.setSize( width, height );
+      this.composer.setSize( width, height );
+  });
+  }
+
+  private initPostprocessing() {
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
   }
 
   private raycastingSetup() {
@@ -164,7 +183,6 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     return name;
   }
 
-
   /**
  * Start the rendering loop
  *
@@ -172,19 +190,29 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
  * @memberof CubeComponent
  */
   private startRenderingLoop() {
-    //* Renderer
-    // Use canvas element in template
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      powerPreference: "high-performance",
+      antialias: false,
+      stencil: false,
+      depth: true
+    });
+
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.createControls();
+
     let component: BackgroundSceneComponent = this;
-    (function render() {
-      component.renderer.render(component.scene, component.camera);
+
+    requestAnimationFrame(function render() {
+
+      if (component.composer) {
+        component.composer.render();
+      }
       component.controls.update();
       requestAnimationFrame(render);
-    }());
+    });
   }
 
   constructor(private weatherEnergyService: WeatherEnergyService) { }
@@ -196,6 +224,7 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.startRenderingLoop();
+    this.initPostprocessing();
   }
 
 }

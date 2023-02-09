@@ -21,6 +21,7 @@
     "@types/three": "^0.146.0",
     "apexcharts": "^3.37.0",
     "chart.js": "^4.2.0",
+    "postprocessing": "6.29.1",
     "rxjs": "~7.5.0",
     "three": "^0.146.0",
     "three-addons": "^1.2.0",
