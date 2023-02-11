@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "gencli": "openapi --input ./api-seduce-nestjs.yaml --output ./client --client angular"
   },
   "private": true,
   "dependencies": {
@@ -22,10 +23,10 @@
     "apexcharts": "^3.37.0",
     "chart.js": "^4.2.0",
     "postprocessing": "6.29.1",
-    "rxjs": "~7.5.0",
     "three": "^0.146.0",
     "three-addons": "^1.2.0",
     "tslib": "^2.3.0",
+    "rxjs": "^7.8.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

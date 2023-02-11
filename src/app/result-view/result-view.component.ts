@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import * as ApexCharts from 'apexcharts'
 
+type Task = {
+  name: string
+}
+
 @Component({
   selector: 'app-result-view',
   templateUrl: './result-view.component.html',
@@ -9,6 +13,18 @@ import * as ApexCharts from 'apexcharts'
 export class ResultViewComponent implements OnInit {
 
   constructor() { }
+
+  public tasks: Task[] = [
+    { name: "reconstruction1" },
+    { name: "reconstruction2" },
+    { name: "reconstruction3" }
+  ]
+
+  public selected = 0;
+
+  public clickList(index: number) {
+    this.selected = index
+  }
 
   ngOnInit(): void {
     const ctx = document.getElementById('chart-consumption') as HTMLCanvasElement;

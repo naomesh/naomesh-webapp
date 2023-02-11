@@ -10,6 +10,11 @@ export class SolarPanelViewComponent implements OnInit {
 
   constructor() { }
 
+  public production: number = 300;
+  public temperature: number = 30;
+  public meteo: string = "Ensoleillé";
+  public date: string = new Date().toString();
+
   ngOnInit(): void {
     const ctx = document.getElementById('chart-sun') as HTMLCanvasElement;
 

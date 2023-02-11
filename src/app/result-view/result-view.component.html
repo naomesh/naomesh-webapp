@@ -10,20 +10,20 @@
 
             <div class="block overflow-auto mt-5 w-full h-[65vh]">
               <table class="w-full">
-                <thead class="sticky top-0 bg-gray-100 bumped">
+                <thead class="sticky top-0 bg-gray-100">
                   <tr>
                     <th>Nom de la tâche</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  <tr *ngFor="let i of [0,1,2,3,4,5,6]" class="w-full text-center border-t-[1px] border-gray-300">
-                    <td>reconstruction-{{i}}</td>
+                  <tr *ngFor="let task of tasks; index as i" class="w-full text-center border-t-[1px] cursor-pointer border-gray-300">
+                    <td (click)="clickList(i)" [ngClass]="selected == i ? 'bg-gray-200' : ''">{{task.name}}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div class="bg-gray-200 text-xs p-1 bumped">7 taches finies</div>
+            <div class="bg-gray-200 text-xs p-1 bumped">{{tasks.length}} taches finies</div>
           </div>
 
           <div class="p-5 flex flex-col overflow-auto w-full">
@@ -31,7 +31,7 @@
 
               <div class="pt-5 bumped rounded-xl p-5 bg-gray-100">
                 <p class="text-gray-500">Tâche:</p>
-                <p class="font-bold text-2xl mt-[-10px]">Reconstruction 1</p>
+                <p class="font-bold text-2xl mt-[-10px]">{{tasks[selected].name}}</p>
 
                 <div class="bg-gray-200 h-[300px] overflow-hidden pressed rounded-lg text-gray-500 my-3">
                   <canvas class="h-full w-full"></canvas>

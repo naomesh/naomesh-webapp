@@ -10,6 +10,7 @@ import { LaunchViewComponent } from './launch-view/launch-view.component';
 import { ServerViewComponent } from './server-view/server-view.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BackgroundSceneComponent } from './background-view/background-scene.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { BackgroundSceneComponent } from './background-view/background-scene.com
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

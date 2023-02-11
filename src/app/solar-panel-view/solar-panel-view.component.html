@@ -9,7 +9,7 @@
             <span class="material-icons text-5xl text-yellow-500"> bolt </span>
           </div>
           <div class="my-auto flex flex-col text-center px-10">
-            <span class="text-5xl font-bold">300</span>
+            <span class="text-5xl font-bold">{{production}}</span>
             <span class="text-3xl text-gray-500">watt</span>
           </div>
           <div class="w-full p-2 m-3 pressed rounded-lg bg-gray-200">
@@ -20,14 +20,14 @@
         <div class="flex justify-around">
           <div class="p-10">
             <p class="text-gray-500 text-xl">Température:</p>
-            <p class="font-bold text-4xl">30°C</p>
+            <p class="font-bold text-4xl">{{temperature}}°C</p>
           </div>
 
           <div class="p-10">
             <p class="text-gray-500 text-xl">Météo:</p>
             <p class="font-bold text-3xl flex">
               <i class="material-icons text-4xl text-yellow-500">wb_sunny</i>
-              <span class="px-2 py-0.5">Ensoleillé</span>
+              <span class="px-2 py-0.5">{{meteo}}</span>
             </p>
           </div>
 
@@ -35,7 +35,7 @@
             <p class="text-gray-500 text-xl">Journée:</p>
             <p class="font-bold text-2xl flex">
               <i class="material-icons text-4xl">event</i>
-              <span class="px-2 py-1">Mer 8 Feb 14:30</span>
+              <span class="px-2 py-1">{{date}}</span>
             </p>
           </div>
         </div>
