@@ -11,7 +11,7 @@
   }
 
   .popup-container {
-      @apply absolute w-screen h-screen p-20 flex items-center justify-center;
+      @apply absolute w-screen h-screen p-[100px] flex items-center justify-center;
   }
   .popup-container > div {
       @apply relative z-20 bg-gray-100 text-gray-700 bg-opacity-95 w-full h-auto rounded-xl px-7 py-5 max-w-[1200px];

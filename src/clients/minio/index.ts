@@ -10,7 +10,7 @@ const minioClient = new Minio.Client({
     secretKey: process.env['S3_BUCKET_SECRET_KEY']
 });
 
-function uploadFilesToS3(bucketName: string, files: string[]): void {
+function uploadFilesToS3(bucketName: string, files: File[]): void {
 
   minioClient.makeBucket(bucketName, 'eu-west-1', function(e: Error) {
     if (e) {

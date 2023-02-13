@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { v4 as uuidv4 } from 'uuid';
+// import { minioClient, uploadFilesToS3 } from '../../clients/minio'
 
 @Component({
   selector: 'app-launch-view',
@@ -11,15 +13,22 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
   public files: { file: File, src: SafeResourceUrl }[] = [];
   public priority: number = 0;
   public quality: number = 0;
+  public idProject: string = "";
 
   constructor(private readonly sanitizer: DomSanitizer) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.idProject = uuidv4();
+  }
 
   ngOnDestroy(): void {
     for (const file of this.files) {
       URL.revokeObjectURL(String(file.src))
     }
+  }
+
+  uploadFiles(): void {
+    // uploadFilesToS3(this.idProject, this.files.map((f) => f.file))
   }
 
   filesSize(): string {
