@@ -11,11 +11,25 @@ export class SolarPanelViewComponent implements OnInit {
   constructor() { }
 
   public production: number = 300;
-  public temperature: number = 30;
-  public meteo: string = "Ensoleillé";
-  public date: string = new Date().toString();
+  public temperature: number = 0;
+  public city: string = "Nantes";
+  public meteo: string = "";
+  public date: string = "";
 
-  ngOnInit(): void {
+  async updateMeteo() {
+    const response = await fetch( `https://wttr.in/${this.city}?format={"meteo":"%c%C","temperature":"%t"}`);
+    const data = await response.json();
+    this.meteo = data.meteo;
+    this.temperature = data.temperature;
+  }
+
+  async ngOnInit() {
+
+    await this.updateMeteo();
+
+    const locale = new Date().toLocaleDateString('fr-fr', { weekday:"short", year:"numeric", month:"short", day:"numeric"});
+    this.date = locale.charAt(0).toUpperCase() + locale.slice(1);
+
     const ctx = document.getElementById('chart-sun') as HTMLCanvasElement;
 
     var chart = new ApexCharts(ctx, {

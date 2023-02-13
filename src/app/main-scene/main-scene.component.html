@@ -10,25 +10,25 @@
 <app-server-view *ngIf="pageIsServer()" ></app-server-view>
 <app-solar-panel-view *ngIf="pageIsPanels()" ></app-solar-panel-view>
 
-<div class="absolute w-full flex justify-center p-2 top-0 left-0">
-  <div class="flex rounded-xl bg-gray-100 opacity-70 pt-3 pb-1 px-3 text-gray-600">
-    <a routerLink="/scene/home" [ngClass]="pageIsHome() ? 'text-lime-500' : ''" class="flex flex-col text-center px-3">
+<div class="absolute flex h-full p-2 top-0 left-0">
+  <div class="flex flex-col m-auto rounded-xl bg-gray-100 opacity-90 pt-3 p-1 text-gray-600">
+    <a routerLink="/scene/home" [ngClass]="pageIsHome() ? 'text-lime-500' : ''" class="flex flex-col text-center p-1">
       <i class="material-icons  text-3xl">home</i>
       <span class="mt-[-5px] text-sm ">Menu</span>
     </a>
-    <a routerLink="/scene/launch" [ngClass]="pageIsLaunch() ? 'text-lime-500' : ''" class="flex flex-col text-center px-3">
+    <a routerLink="/scene/launch" [ngClass]="pageIsLaunch() ? 'text-lime-500' : ''" class="flex flex-col text-center p-1">
       <i class="material-icons text-3xl">send</i>
       <span class="mt-[-5px] text-sm ">Lanceur</span>
     </a>
-    <a routerLink="/scene/panels" [ngClass]="pageIsPanels() ? 'text-lime-500' : ''" class="flex flex-col text-center px-3">
+    <a routerLink="/scene/panels" [ngClass]="pageIsPanels() ? 'text-lime-500' : ''" class="flex flex-col text-center p-1">
       <i class="material-icons text-3xl">wb_sunny</i>
       <span class="mt-[-5px] text-sm ">Solaire</span>
     </a>
-    <a routerLink="/scene/server" [ngClass]="pageIsServer() ? 'text-lime-500' : ''" class="flex flex-col text-center px-3">
+    <a routerLink="/scene/server" [ngClass]="pageIsServer() ? 'text-lime-500' : ''" class="flex flex-col text-center p-1">
       <i class="material-icons text-3xl">dns</i>
       <span class="mt-[-5px] text-sm ">Serveurs</span>
     </a>
-    <a routerLink="/scene/result" [ngClass]="pageIsResult() ? 'text-lime-500' : ''" class="flex flex-col text-center px-3">
+    <a routerLink="/scene/result" [ngClass]="pageIsResult() ? 'text-lime-500' : ''" class="flex flex-col text-center p-1">
       <i class="material-icons text-3xl">image</i>
       <span class="mt-[-5px] text-sm ">Resultats</span>
     </a>

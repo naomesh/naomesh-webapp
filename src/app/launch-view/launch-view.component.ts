@@ -41,10 +41,9 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
 
     for (const i in target.files) {
       const file = target.files[i] as File;
-      console.log(file)
+
       const url = window.URL.createObjectURL(file)
       const src = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-      console.log({url, src})
 
       this.files.push({ file, src })
     }

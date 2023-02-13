@@ -87,7 +87,7 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
           this.pickableObjects.push(child);
         }
       });
-      console.log(this.model);
+
       this.scene.add(this.model);
     });
 

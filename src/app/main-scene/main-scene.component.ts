@@ -48,7 +48,6 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    console.log(this.page)
   }
 
   ngOnDestroy(): void {

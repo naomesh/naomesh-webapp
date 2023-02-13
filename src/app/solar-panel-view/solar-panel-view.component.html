@@ -5,10 +5,10 @@
 
       <div class="bumped w-full rounded-lg mt-5 overflow-hidden">
         <div class="flex bg-gray-100">
-          <div class="my-auto p-4">
+          <div class="my-auto pl-4">
             <span class="material-icons text-5xl text-yellow-500"> bolt </span>
           </div>
-          <div class="my-auto flex flex-col text-center px-10">
+          <div class="my-auto flex flex-col text-center pr-10">
             <span class="text-5xl font-bold">{{production}}</span>
             <span class="text-3xl text-gray-500">watt</span>
           </div>
@@ -19,20 +19,24 @@
 
         <div class="flex justify-around">
           <div class="p-10">
-            <p class="text-gray-500 text-xl">Température:</p>
-            <p class="font-bold text-4xl">{{temperature}}°C</p>
+            <p class="text-gray-500 text-xl">Ville:</p>
+            <p class="font-bold text-3xl">{{city}}</p>
           </div>
 
           <div class="p-10">
             <p class="text-gray-500 text-xl">Météo:</p>
             <p class="font-bold text-3xl flex">
-              <i class="material-icons text-4xl text-yellow-500">wb_sunny</i>
               <span class="px-2 py-0.5">{{meteo}}</span>
             </p>
           </div>
 
           <div class="p-10">
-            <p class="text-gray-500 text-xl">Journée:</p>
+            <p class="text-gray-500 text-xl">Température:</p>
+            <p class="font-bold text-4xl">{{temperature}}</p>
+          </div>
+
+          <div class="p-10">
+            <p class="text-gray-500 text-xl">Date:</p>
             <p class="font-bold text-2xl flex">
               <i class="material-icons text-4xl">event</i>
               <span class="px-2 py-1">{{date}}</span>

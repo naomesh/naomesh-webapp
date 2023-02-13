@@ -26,7 +26,7 @@ function uploadFilesToS3(bucketName: string, files: string[]): void {
     for (const file of files) {
       minioClient.fPutObject(bucketName, 'photos-europe.tar', file, metaData, function(e: Error, etag: any) {
         if (e) {
-          throw new Error("Exception while uplkoading file to the s3 bucket: " + e)
+          throw new Error("Exception while uploading file to the s3 bucket: " + e)
         }
       });
     }
