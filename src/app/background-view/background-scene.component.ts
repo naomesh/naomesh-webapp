@@ -238,7 +238,6 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
  * Start the rendering loop
  *
  * @private
- * @memberof CubeComponent
  */
   private startRenderingLoop() {
     this.renderer = new THREE.WebGLRenderer({
@@ -266,7 +265,7 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     });
   }
 
-  constructor(private weatherEnergyService: WeatherEnergyService) { }
+  constructor() { }
 
   ngOnInit(): void {
 

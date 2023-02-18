@@ -12,7 +12,7 @@ export class SolarPanelViewComponent implements OnInit {
 
   constructor(private defaultService: DefaultService) { }
 
-  public production: number = 300;
+  public production: number | undefined = 300;
   public temperature: number = 0;
   public city: string = "Nantes";
   public meteo: string = "☀️ Ensoleillé";
@@ -30,12 +30,19 @@ export class SolarPanelViewComponent implements OnInit {
   }
 
   initUpdateProduction() {
-    const data = this.defaultService.getLiveProductionSolarPanels()
-    data.subscribe({
-      next(response) { console.log(response); },
-      error(err) { console.error('Error: ' + err); },
-      complete() { console.log('Completed'); }
-    });
+    this.defaultService.getLiveProductionSolarPanels().subscribe(
+      response => {
+        this.production = response.data;
+      }
+    )
+  }
+
+  getSolorPanelProductionGraphData() {
+    this.defaultService.getProductionSolarPanels(1).subscribe(
+      response => {
+        console.log(response);
+      }
+    )
   }
 
   async ngOnInit() {

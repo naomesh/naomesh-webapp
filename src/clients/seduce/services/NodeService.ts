@@ -21,12 +21,12 @@ export class NodeService {
      * @throws ApiError
      */
     public getLiveConsumptionOfNode(
-        nodeId: string,
-    ): Observable<{
-        name?: string;
-        unit?: string;
-        data?: number;
-    }> {
+nodeId: string,
+): Observable<{
+name?: string;
+unit?: string;
+data?: number;
+}> {
         return __request(OpenAPI, this.http, {
             method: 'GET',
             url: '/v1/{nodeID}/live-consumption',
@@ -43,27 +43,27 @@ export class NodeService {
      * Get consumption of node
      * It is in watt
      * @param nodeId ID of the node
-     * @param step number of seconde, granularity, step
+     * @param step number of ms, granularity, step
      * @param from Number of hours, from now to get measures
      * @returns any successful operation
      * @throws ApiError
      */
     public getConsumptionOfNode(
-        nodeId: string,
-        step: number = 0.5,
-        from: number = 2,
-    ): Observable<{
-        name?: string;
-        unit?: string;
-        /**
-         * Total consumption in kWh
-         */
-        sum?: number;
-        /**
-         * array of tuples, first is timestamp and secone is value in watt
-         */
-        data?: Array<Array<number>>;
-    }> {
+nodeId: string,
+step: number = 500,
+from: number = 2,
+): Observable<{
+name?: string;
+unit?: string;
+/**
+ * Total consumption in kWh
+ */
+sum?: number;
+/**
+ * array of tuples, first is timestamp and secone is value in watt
+ */
+data?: Array<Array<number>>;
+}> {
         return __request(OpenAPI, this.http, {
             method: 'GET',
             url: '/v1/{nodeID}/consumption-diff',
@@ -84,31 +84,31 @@ export class NodeService {
      * Get consumption of node with historical data
      * historical data
      * @param nodeId ID of the node
-     * @param step number of s, granularity, step
+     * @param step number of ms, granularity, step
      * @param range Array of start;end
      * @returns any successful operation
      * @throws ApiError
      */
     public getConsumptionOfNodeHistorical(
-        nodeId: string,
-        step: number = 0.5,
-        range?: Array<string>,
-    ): Observable<{
-        name?: string;
-        unit?: string;
-        /**
-         * Total consumption in kWh
-         */
-        sum?: number;
-        data?: Array<{
-            start?: number;
-            end?: number;
-            /**
-             * array of tuples, first is timestamp and secone is value in watt
-             */
-            data?: Array<Array<number>>;
-        }>;
-    }> {
+nodeId: string,
+step: number = 500,
+range?: Array<string>,
+): Observable<{
+name?: string;
+unit?: string;
+/**
+ * Total consumption in kWh
+ */
+sum?: number;
+data?: Array<{
+start?: number;
+end?: number;
+/**
+ * array of tuples, first is timestamp and secone is value in watt
+ */
+data?: Array<Array<number>>;
+}>;
+}> {
         return __request(OpenAPI, this.http, {
             method: 'GET',
             url: '/v1/{nodeID}/consumption',

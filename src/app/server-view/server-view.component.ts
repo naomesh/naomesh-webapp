@@ -26,6 +26,15 @@ export class ServerViewComponent implements OnInit {
     this.selected = index
   }
 
+  getTasks() {
+    // call service
+    // assign task object
+  }
+
+  getConsumptionGraphForTask() {
+    
+  }
+
   ngOnInit(): void {
     const ctx = document.getElementById('chart-server') as HTMLCanvasElement;
 
