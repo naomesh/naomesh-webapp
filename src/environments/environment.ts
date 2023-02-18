@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  SEDUCE_API_URL: "http://lrouret-vm.lille.grid5000.fr:3001",
+  WEBAPP_API_URL: "http://localhost:3000"
 };
 
 /*

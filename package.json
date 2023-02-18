@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "gencli": "openapi --input ./api-seduce-nestjs.yaml --output ./src/clients/seduce --client angular"
+    "gen_sedcli": "openapi --input ./src/clients/nestjs-seduce-api.yaml --output ./src/clients/seduce --client angular",
+    "gen_webcli": "openapi --input ./src/clients/nestjs-web-api.yaml --output ./src/clients/webapi --client angular"
   },
   "private": true,
   "dependencies": {
@@ -20,8 +21,6 @@
     "@angular/router": "^14.2.0",
     "@types/three": "^0.146.0",
     "apexcharts": "^3.37.0",
-    "dotenv": "^16.0.3",
-    "minio": "^7.0.32",
     "postprocessing": "6.29.1",
     "rxjs": "^7.8.0",
     "three": "^0.146.0",
@@ -32,7 +31,6 @@
     "@angular/cli": "~14.2.7",
     "@angular/compiler-cli": "^14.2.0",
     "@types/jasmine": "~4.0.0",
-    "@types/minio": "^7.0.15",
     "@types/node": "^18.13.0",
     "@types/uuid": "^9.0.0",
     "autoprefixer": "^10.4.13",

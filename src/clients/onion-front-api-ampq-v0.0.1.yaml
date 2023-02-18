@@ -1,0 +1,131 @@
+openapi: 3.0.0
+servers:
+  - url: "http://127.0.0.1:3001"
+    variables: {}
+info:
+  version: 0.0.1
+  title: "Naomesh Seduce NestJS Transform API"
+  description: Specification
+  termsOfService:
+    ""
+    # Contact information: name, email, URL.
+  contact:
+    name: API Support
+    email: lucas.rouretperso@gmail.com
+    url: https://github.com/naomesh
+  # Name of the license and a URL to the license description.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: node
+    description: everything related to node
+
+components:
+  allocatedNodesPayload:
+    type: object
+    properties:
+      nodes:
+        type: array
+        items:
+          type: string
+          description: Node id
+          example: ecotype-25_pdu-Z1.2
+  jobStatusPayload:
+    type: object
+    properties:
+      number_of_running_jobs:
+        type: integer
+        example: 3
+      jobs:
+        type: array
+        items:
+          type: object
+          properties:
+            job_id:
+              type: string
+            state:
+              type: string
+              enum:
+                - running
+                - paused
+                - failed
+            last_paused_date:
+              type: integer
+              description: Timestamp in ms
+              example: 1676285072739
+            last_started_date:
+              type: integer
+              description: Timestamp in ms
+              example: 1676285072739
+            step_idx:
+              type: integer
+              example: 0
+            pictures_quantity:
+              type: integer
+              example: 10
+            node_id:
+              type: string
+              example: ecotype-25_pdu-Z1.2
+            politic:
+              $ref: "#/components/politic"
+            consumption:
+              type: number
+              description: Current job consumption in watts
+              example: 100
+            pictures_obj_key:
+              type: string
+              example: /{job_id}/uploads
+              description: S3 folder pictures obj key
+  jobRequestPayload:
+    type: object
+    properties:
+      job_id:
+        type: string
+      pictures_obj_key:
+        type: string
+        description: S3 folder pictures obj key
+        example: /{job_id}/uploads
+      politic:
+        $ref: "#/components/politic"
+  jobFinishedPayload:
+    type: object
+    properties:
+      job_id:
+        type: string
+      node_uses:
+        type: array
+        items:
+          type: object
+          properties:
+            start_time:
+              type: integer
+              example: 1676285072739
+            end_time:
+              type: integer
+              example: 1676285072739
+            node_id:
+              type: string
+              example: ecotype-25_pdu-Z1.2
+      model_obj_key:
+        type: string
+        example: /{job_id}/results/model.obj
+      texture_obj_key:
+        example: /{job_id}/results/texture
+        type: string
+      politic:
+        $ref: "#/components/politic"
+
+  politic:
+    type: object
+    properties:
+      quality:
+        type: string
+        enum:
+          - good
+          - bad
+      energy:
+        type: string
+        enum:
+          - green
+          - bypass

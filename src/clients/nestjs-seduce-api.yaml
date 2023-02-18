@@ -1,12 +1,13 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://127.0.0.1:3001'
+  - url: "http://127.0.0.1:3001"
     variables: {}
 info:
   version: 0.0.1
-  title: 'Naomesh Seduce NestJS Transform API'
+  title: "Naomesh Seduce NestJS Transform API"
   description: Specification
-  termsOfService: ''
+  termsOfService:
+    ""
     # Contact information: name, email, URL.
   contact:
     name: API Support
@@ -22,7 +23,7 @@ tags:
 paths:
   /v1/{nodeID}/live-consumption:
     parameters:
-      - $ref: '#/components/parameters/nodeID'
+      - $ref: "#/components/parameters/nodeID"
     get:
       description: It sums PSU 0 and PSU 1
       summary: Get live consumption of node. It sums PSU 0 and PSU 1
@@ -31,7 +32,7 @@ paths:
       tags:
         - node
       responses:
-        '200':
+        "200":
           description: sucessful operation
           content:
             application/json:
@@ -47,12 +48,12 @@ paths:
                   data:
                     type: number
                     example: 114.4
-        '404':
+        "404":
           description: invalid node id, not found
 
   /v1/{nodeID}/consumption-diff:
     parameters:
-      - $ref: '#/components/parameters/nodeID'
+      - $ref: "#/components/parameters/nodeID"
     get:
       summary: Get consumption of node
       description: It is in watt
@@ -75,7 +76,7 @@ paths:
       tags:
         - node
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
@@ -96,8 +97,7 @@ paths:
                     type: array
                     description: array of tuples, first is timestamp and secone is value in watt
                     example:
-                      -
-                        - 1675782805000
+                      - - 1675782805000
                         - 113.4
                     items:
                       type: array
@@ -106,11 +106,11 @@ paths:
                       maxItems: 2
                       minItems: 2
 
-        '400':
-            description: invalid node id, not found
+        "400":
+          description: invalid node id, not found
   /v1/{nodeID}/consumption:
     parameters:
-      - $ref: '#/components/parameters/nodeID'
+      - $ref: "#/components/parameters/nodeID"
     get:
       summary: Get consumption of node with historical data
       description: historical data
@@ -137,7 +137,7 @@ paths:
       tags:
         - node
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
@@ -169,8 +169,7 @@ paths:
                           type: array
                           description: array of tuples, first is timestamp and secone is value in watt
                           example:
-                            -
-                              - 1675782805000
+                            - - 1675782805000
                               - 113.4
                           items:
                             type: array
@@ -178,10 +177,10 @@ paths:
                               type: number
                             maxItems: 2
                             minItems: 2
-        '400':
+        "400":
           description: invalid node id, not found
 
-  '/v1/live-consumption':
+  "/v1/live-consumption":
     get:
       operationId: getLiveConsumptionOfAllNodes
       description: Get live consumption of all nodes in watt specified by query parameter
@@ -198,7 +197,7 @@ paths:
               example: ecotype-25_pdu-Z1.2,ecotype-26_pdu-Z1.2
           description: Array of node ids
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
@@ -214,15 +213,15 @@ paths:
                   data:
                     type: number
                     example: 114.4
-        '404':
+        "404":
           description: Invalid ID supplied
 
-  '/v1/live-production-solar-panels':
+  "/v1/live-production-solar-panels":
     get:
       description: Get production of solar panels
       operationId: getLiveProductionSolarPanels
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
@@ -242,14 +241,12 @@ paths:
 components:
   parameters:
     nodeID:
-        name: nodeID
-        in: path
-        description: ID of the node
-        required: true
-        schema:
-          type: string
-          example: "ecotype-25_pdu-Z1.2"
+      name: nodeID
+      in: path
+      description: ID of the node
+      required: true
+      schema:
+        type: string
+        example: "ecotype-25_pdu-Z1.2"
   links: {}
   callbacks: {}
-
-

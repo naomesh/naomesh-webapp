@@ -1,0 +1,31 @@
+openapi: 3.0.0
+paths:
+  /upload/{id}:
+    post:
+      operationId: AppController_uploadFiles
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+info:
+  title: Naomesh Frontend NestJS API
+  description: Specification
+  version: "1.0"
+  contact:
+    name: API Support
+    url: lucas.rouretperso@gmail.com
+    email: https://github.com/naomesh
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: node
+    description: everything related to node
+servers: []
+components:
+  schemas: {}

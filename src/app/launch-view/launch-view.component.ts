@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
-// import { minioClient, uploadFilesToS3 } from '../../clients/minio'
 
 @Component({
   selector: 'app-launch-view',
@@ -15,7 +16,7 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
   public quality: number = 0;
   public idProject: string = "";
 
-  constructor(private readonly sanitizer: DomSanitizer) { }
+  constructor(private readonly sanitizer: DomSanitizer, private router: Router) { }
 
   ngOnInit(): void {
     this.idProject = uuidv4();
@@ -27,8 +28,34 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  uploadFiles(): void {
-    // uploadFilesToS3(this.idProject, this.files.map((f) => f.file))
+  async uploadFiles(): Promise<void> {
+    if (!this.files) {
+      console.error("No file selected")
+      return
+    }
+
+    console.log(this.idProject, this.files.map((f) => f.file))
+
+    const formData = new FormData();
+
+    for (const file of this.files.map((f) => f.file)) {
+      formData.append(file.name, file, file.name);
+    }
+
+    console.log(this.idProject,formData)
+
+    await fetch(`${environment.WEBAPP_API_URL}/upload/${this.idProject}`, {
+      method: 'POST',
+      body: formData
+    })
+    .then((res) => {
+      if (res.ok) {
+        this.router.navigate(['/scene/server'])
+      } else {
+        throw new Error(res.statusText);
+      }
+    })
+    .catch((err) => console.error(err))
   }
 
   filesSize(): string {
