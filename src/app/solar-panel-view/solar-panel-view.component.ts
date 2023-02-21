@@ -18,13 +18,16 @@ export class SolarPanelViewComponent implements OnInit {
   public meteo: string = "☀️ Ensoleillé";
   public date: string = "+13°C";
 
+  private chartSerieData: any[] = [];
+
+
   async updateMeteo() {
     try {
-      const response = await fetch( `https://wttr.in/${this.city}?format={"meteo":"%c%C","temperature":"%t"}`);
+      const response = await fetch(`https://wttr.in/${this.city}?format={"meteo":"%c%C","temperature":"%t"}`);
       const data = await response.json();
       this.meteo = data.meteo;
       this.temperature = data.temperature;
-    } catch(err: any) {
+    } catch (err: any) {
       console.error(err)
     }
   }
@@ -37,13 +40,54 @@ export class SolarPanelViewComponent implements OnInit {
     )
   }
 
-  getSolorPanelProductionGraphData() {
+  updateSolarPanelProductionGraphData() {
     this.defaultService.getProductionSolarPanels(1).subscribe(
       response => {
-        console.log(response);
+        let solarPanelData = response.data;
+
+        // Format data
+        solarPanelData?.forEach(data => {
+          let timeFormat = new Date(data[0])
+          this.chartSerieData?.push({ x: timeFormat, y: Math.floor(data[1]) });
+        });
+
+        this.chartSerieData?.sort((p1, p2) => (p1.x > p2.x) ? 1 : (p1.x < p2.x) ? -1 : 0);
+
+        const ctx = document.getElementById('chart-sun') as HTMLCanvasElement;
+
+        let chart = new ApexCharts(ctx, {
+          chart: {
+            toolbar: {
+              show: false
+            },
+            width: '100%',
+            height: "200px",
+            type: 'area',
+          },
+          dataLabels: {
+            enabled: false
+          },
+          colors: ["#fbbf24"],
+          stroke: {
+            curve: 'smooth',
+          },
+          series: [{
+            name: 'production (W)',
+            data: this.chartSerieData
+          }],
+          xaxis: {
+            type: 'datetime',
+            labels: {
+              datetimeUTC: false
+            }
+          },
+        });
+
+        chart.render();
       }
     )
   }
+
 
   async ngOnInit() {
 
@@ -51,37 +95,11 @@ export class SolarPanelViewComponent implements OnInit {
 
     this.initUpdateProduction();
 
-    const locale = new Date().toLocaleDateString('fr-fr', { weekday:"short", year:"numeric", month:"short", day:"numeric"});
+    this.updateSolarPanelProductionGraphData();
+
+    const locale = new Date().toLocaleDateString('fr-fr', { weekday: "short", year: "numeric", month: "short", day: "numeric" });
     this.date = locale.charAt(0).toUpperCase() + locale.slice(1);
 
-    const ctx = document.getElementById('chart-sun') as HTMLCanvasElement;
-
-    var chart = new ApexCharts(ctx, {
-      chart: {
-        toolbar: {
-          show: false
-        },
-        width: '100%',
-        height: "200px",
-        type: 'area',
-      },
-      dataLabels: {
-        enabled: false
-      },
-      colors: ["#fbbf24"],
-      stroke: {
-        curve: 'smooth',
-      },
-      series: [{
-        name: 'sales',
-        data: [30,40,35,50,49,60,70,91,125]
-      }],
-      xaxis: {
-        categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
-      }
-    });
-
-    chart.render();
   }
 
 }
