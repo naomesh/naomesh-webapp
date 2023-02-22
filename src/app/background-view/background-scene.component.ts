@@ -5,7 +5,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { Object3D } from 'three';
-import { WeatherEnergyService } from '../services/weather-energy-service/weather-energy.service';
 
 import { EffectComposer, RenderPass, BlendFunction, EffectPass, SMAAEffect, EdgeDetectionMode, PredicationMode, SMAAPreset, DepthOfFieldEffect, DepthEffect, VignetteEffect } from "postprocessing";
 
@@ -65,7 +64,7 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     this.controls.maxDistance = 60.0
     this.controls.minDistance = 10.0
     this.controls.update();
-  };
+  }
 
   private createScene() {
     // Scene
@@ -96,10 +95,10 @@ export class BackgroundSceneComponent implements OnInit, AfterViewInit {
     this.camera.position.set(50, 19, -20);
 
     // Light
-    const ambient = new THREE.AmbientLight('#d0e0c3', 0.9);
+    const ambient = new THREE.AmbientLight('#0x00000', 0.9);
     this.scene.add(ambient);
 
-    const sunLight = new THREE.DirectionalLight('#bda47b', 1.3);
+    const sunLight = new THREE.DirectionalLight('0xffdf04', 1.3);
     sunLight.position.set(-69, 44, 14);
     this.scene.add(sunLight);
 
