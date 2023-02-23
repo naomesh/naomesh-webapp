@@ -4,60 +4,135 @@
     <a routerLink="/scene/home" class="close-button">╳</a>
 
     <div class="bumped rounded-xl my-3 flex flex-row">
+      <div class="p-5 grow">
+        <h2>Déposer les images</h2>
 
-        <div class="p-5 grow">
-          <h2>Déposer les images</h2>
+        <div
+          class="w-full h-[55vh] relative bg-gray-200 rounded-xl mt-5 pressed overflow-auto"
+        >
+          <input
+            type="file"
+            multiple="multiple"
+            accept="image/png, image/jpeg"
+            class="absolute w-full h-full opacity-0 cursor-pointer"
+            (change)="onFileSelected($event)"
+            #fileUpload
+          />
 
-          <div class="w-full h-[55vh] relative bg-gray-200 rounded-xl mt-5 pressed overflow-auto">
-            <input type="file" multiple="multiple" accept="image/png, image/jpeg" class="absolute w-full h-full opacity-0 cursor-pointer" (change)="onFileSelected($event)" #fileUpload>
-
-            <div class="relative flex flex-wrap justify-left align-top gap-0">
-
-              <div *ngFor="let file of files; index as i" class="bumped relative m-2 h-[140px] w-[200px] rounded-lg overflow-hidden">
-                <img class="object-cover h-full w-full" [src]="file.src" alt="" />
-                <button class="absolute right-2 top-2" (click)="deleteFile(i)">╳</button>
-                <div class="flex bg-white absolute w-full bottom-0 left-0 p-1">
-                  <p class="w-full text-center align-middle text-xs">{{file.file.name}}</p>
-                </div>
-              </div>
-
-              <div class="bumped relative m-2 h-[140px] w-[200px] rounded-lg overflow-hidden">
-                <button class="w-full h-full p-6 pt-10" (click)="fileUpload.click()">
-                  <p class="text-3xl"> + </p>
-                  <p class="text-sm"> Glisser déposer ou cliquer ici </p>
-                </button>
+          <div class="relative flex flex-wrap justify-left align-top gap-0">
+            <div
+              *ngFor="let file of files; index as i"
+              class="bumped relative m-2 h-[140px] w-[200px] rounded-lg overflow-hidden"
+            >
+              <img class="object-cover h-full w-full" [src]="file.src" alt="" />
+              <button class="absolute right-2 top-2" (click)="deleteFile(i)">
+                ╳
+              </button>
+              <div class="flex bg-white absolute w-full bottom-0 left-0 p-1">
+                <p class="w-full text-center align-middle text-xs">
+                  {{ file.file.name }}
+                </p>
               </div>
             </div>
-          </div>
 
-          <div class="p-2 text-gray-600">
-              Taille totale: {{filesSize()}}MiB
+            <div
+              class="bumped relative m-2 h-[140px] w-[200px] rounded-lg overflow-hidden"
+            >
+              <button
+                class="w-full h-full p-6 pt-10"
+                (click)="fileUpload.click()"
+              >
+                <p class="text-3xl">+</p>
+                <p class="text-sm">Glisser déposer ou cliquer ici</p>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="p-5 flex flex-col h-[65vh] max-w-[400px] overflow-auto">
-            <p class="text-lg">Politique de la tâche</p>
-            <label class="text-sm py-3">
-              <div class="flex">
-                <span class="material-icons text-3xl text-lime-500"> nature </span>
-                <span class="font-bold text-lg p-1">Energie</span>
-              </div>
-              <input type="range" min="0" max="1" [(ngModel)]="energy" class="w-full input-range" />
-              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. </p>
-            </label>
+        <div class="p-2 text-gray-600">Taille totale: {{ filesSize() }}MiB</div>
+      </div>
 
-            <label class="text-sm py-3">
-              <div class="flex">
-                <span class="material-icons text-3xl text-yellow-500"> bolt </span>
-                <span class="font-bold text-lg p-1">Qualité</span>
-              </div>
-                <input type="range" min="0" max="1" [(ngModel)]="quality" class="w-full input-range" />
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. </p>
-            </label>
-        </div>
+      <div class="p-5 flex flex-col h-[65vh] max-w-[400px] overflow-auto">
+        <p class="text-lg">Politique de la tâche</p>
+
+        <p class="p-2 text-sm">
+          La consommation d'energie (verte ou non, intensive ou moderée) de
+          l'orchestrateur peut être impactée via la définition d'une politique
+          au lancement de la tâche:
+        </p>
+
+        <label class="text-sm py-3">
+          <div class="flex">
+            <span class="material-icons text-3xl text-lime-500"> nature </span>
+            <span class="font-bold text-lg p-1">Energie</span>
+          </div>
+
+          <input
+            type="range"
+            min="0"
+            max="1"
+            [(ngModel)]="energy"
+            class="w-full input-range"
+          />
+
+          <div class="inline-flex font-bold px-4 w-full">
+            <span class="flex-none">+</span>
+            <span class="grow text-center">
+              {{ ["green", "bypass"][energy] }}
+            </span>
+            <span class="flex-none">-</span>
+          </div>
+
+          <p class="p-3">
+            {{
+              [
+                "On authorisera le lancement uniquement a partir d'un
+              certain seuil d'energie verte produite, et on mettra la tâche en
+              pause si plus d'energie n'est disponible.",
+                "On lancera la tâche peut importe la production en
+              energie verte actuelle. On ne mettra pas non plus la tâche en pause si l'energie verte viens a manquer."
+              ][energy]
+            }}
+          </p>
+        </label>
+
+        <label class="text-sm py-3">
+          <div class="flex">
+            <span class="material-icons text-3xl text-yellow-500"> bolt </span>
+            <span class="font-bold text-lg p-1">Qualité</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            [(ngModel)]="quality"
+            class="w-full input-range"
+          />
+
+          <div class="inline-flex font-bold px-4 w-full">
+            <span class="flex-none">+</span>
+            <span class="grow text-center">
+              {{ ["good", "bad"][quality] }}
+            </span>
+            <span class="flex-none">-</span>
+          </div>
+
+          <p class="p-3">
+            {{
+              [
+                "On maximisera la qualité du rendu, quitte a consommer plus d'energie avec un processus plus long.",
+                "On sacrifiera une partie de la qualité du processus pour faire des économies d'énergie."
+              ][quality]
+            }}
+          </p>
+        </label>
+      </div>
     </div>
 
-    <button (click)="uploadFiles()" class="bumped bg-gray-100 rounded-full w-full py-2 text-xl flex justify-center">
+    <button
+      (click)="uploadFiles()"
+      class="bumped bg-gray-100 rounded-full w-full py-2 text-xl flex justify-center"
+    >
       <span class="p-0.5 font-bold">Téléverser</span>
       <i class="material-icons !text-2xl px-2">send</i>
     </button>
