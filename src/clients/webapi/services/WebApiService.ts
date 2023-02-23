@@ -46,4 +46,24 @@ export class WebApiService {
       },
     });
   }
+
+  public getResults() {
+    return __request(OpenAPI, this.http, {
+      method: 'GET',
+      url: `/results`,
+      errors: {
+        400: `Invalid request`,
+      },
+    });
+  }
+
+  public getResultData(id: string) {
+    return __request(OpenAPI, this.http, {
+      method: 'GET',
+      url: `/results/${id}`,
+      errors: {
+        400: `Invalid request`,
+      },
+    });
+  }
 }

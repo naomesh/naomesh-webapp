@@ -1,9 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import * as ApexCharts from 'apexcharts';
-
-type Task = {
-  name: string;
-};
+import { JobStatusPayload, Job } from '../../clients/webapi/models';
 
 @Component({
   selector: 'app-server-view',
@@ -13,22 +10,17 @@ type Task = {
 export class ServerViewComponent implements OnInit {
   constructor() {}
 
-  public tasks: Task[] = [
-    { name: 'reconstruction1' },
-    { name: 'reconstruction2' },
-    { name: 'reconstruction3' },
-  ];
+  @Input()
+  jobStatus: JobStatusPayload | undefined = undefined;
 
-  public selected: number = 0;
+  public chart: ApexCharts | undefined = undefined;
+  public selected: number = -1;
+  public selected_job: Job | undefined = undefined;
   public consommation_totale: number = 0;
 
   public clickList(index: number) {
     this.selected = index;
-  }
-
-  getTasks() {
-    // call service
-    // assign task object
+    this.selected_job = this.jobStatus?.jobs[index];
   }
 
   getConsumptionGraphForTask() {}
@@ -36,7 +28,7 @@ export class ServerViewComponent implements OnInit {
   ngOnInit(): void {
     const ctx = document.getElementById('chart-server') as HTMLCanvasElement;
 
-    var chart = new ApexCharts(ctx, {
+    this.chart = new ApexCharts(ctx, {
       chart: {
         toolbar: {
           show: false,
@@ -54,15 +46,11 @@ export class ServerViewComponent implements OnInit {
       },
       series: [
         {
-          name: 'sales',
-          data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
+          data: [],
         },
       ],
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
-      },
     });
 
-    chart.render();
+    this.chart.render();
   }
 }

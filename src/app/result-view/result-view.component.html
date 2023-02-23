@@ -1,62 +1,101 @@
 <div class="popup-container">
   <div class="p-3 w-full">
-      <h1>Resultats</h1>
-      <a routerLink="/scene/home" class="close-button">╳</a>
+    <h1>Resultats</h1>
+    <a routerLink="/scene/home" class="close-button">╳</a>
 
-      <div class="bumped rounded-xl my-3 flex flex-row">
+    <div class="bumped rounded-xl my-3 flex flex-row">
+      <div class="p-5 w-[300px]">
+        <h2>Liste des résultats</h2>
 
-          <div class="p-5 w-[300px]">
-            <h2>Liste des résultats</h2>
+        <div class="block overflow-auto mt-5 w-full h-[65vh]">
+          <table class="w-full">
+            <thead class="sticky top-0 bg-gray-100">
+              <tr>
+                <th>Nom de la tâche</th>
+              </tr>
+            </thead>
 
-            <div class="block overflow-auto mt-5 w-full h-[65vh]">
-              <table class="w-full">
-                <thead class="sticky top-0 bg-gray-100">
-                  <tr>
-                    <th>Nom de la tâche</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr *ngFor="let task of tasks; index as i" class="w-full text-center border-t-[1px] cursor-pointer border-gray-300">
-                    <td (click)="clickList(i)" [ngClass]="selected == i ? 'bg-gray-200' : ''">{{task.name}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="bg-gray-200 text-xs p-1 bumped">{{tasks.length}} taches finies</div>
-          </div>
-
-          <div class="p-5 flex flex-col overflow-auto w-full">
-              <h2>Détails de la tâche</h2>
-
-              <div class="pt-5 bumped rounded-xl p-5 bg-gray-100">
-                <p class="text-gray-500">Tâche:</p>
-                <p class="font-bold text-2xl mt-[-10px]">{{tasks[selected].name}}</p>
-
-                <div class="bg-gray-200 h-[300px] overflow-hidden pressed rounded-lg text-gray-500 my-3">
-                  <canvas #resultcanvas id="result-canvas" class="h-full w-full"></canvas>
-                </div>
-
-                <p class="text-sm text-gray-500 text-center">Utilisez votre souris pour faire tourner l'objet</p>
-
-                <div class="flex justify-center">
-                  <div class="p-3">
-                    <p>Lancé à 13:00</p>
-                    <p>Fini à 13:06</p>
-                    <p>Durée: 6 minutes</p>
-                  </div>
-                  <div class="border-r-[1px] border-gray-300"></div>
-                  <div class="p-3">
-                    <p>Noeud: Gros 1</p>
-                    <p>CPU: 48</p>
-                    <p>RAM: 64</p>
-                  </div>
-                </div>
-
-                <div id="chart-consumption"></div>
-
-              </div>
-          </div>
+            <tbody>
+              <tr
+                *ngFor="let result of results; index as i"
+                class="w-full text-center border-t-[1px] cursor-pointer border-gray-300"
+              >
+                <td
+                  (click)="clickList(i)"
+                  [ngClass]="selected == i ? 'bg-gray-200' : ''"
+                >
+                  {{ result.name }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bg-gray-200 text-xs p-1 bumped">
+          {{ results.length }} taches finies
+        </div>
       </div>
+
+      <div class="p-5 flex flex-col overflow-auto w-full">
+        <h2>Détails de la tâche</h2>
+
+        <div class="pt-5 bumped rounded-xl p-5 bg-gray-100 h-full w-full">
+          <div *ngIf="selected_result != undefined">
+            <p class="text-gray-500">Tâche:</p>
+            <p class="font-bold text-2xl mt-[-10px]">
+              {{ selected_result.name }}
+            </p>
+          </div>
+
+          <div
+            [ngClass]="selected_result != undefined ? 'h-[300px] ' : 'h-[1px]'"
+            class="bg-gray-200 overflow-hidden pressed rounded-lg text-gray-500 my-3"
+          >
+            <canvas
+              #resultcanvas
+              id="result-canvas"
+              class="h-full w-full"
+            ></canvas>
+          </div>
+
+          <div *ngIf="selected_result != undefined">
+            <p class="text-sm text-gray-500 h-full w-full text-center">
+              Utilisez votre souris pour faire tourner l'objet
+            </p>
+
+            <div class="flex justify-center">
+              <div class="p-3">
+                <p>Lancé à {{ selected_result.start_time }}</p>
+                <p>Fini à {{ selected_result.end_time }}</p>
+                <p>
+                  A durée
+                  {{ selected_result.end_time - selected_result.start_time }}
+                </p>
+              </div>
+              <div class="border-r-[1px] border-gray-300"></div>
+              <div class="p-3">
+                <p>Noeud: {{ selected_result.node_id }}</p>
+                <p>
+                  total_comsumption: {{ selected_result.total_comsumption }}
+                </p>
+                <p>total_production: {{ selected_result.total_production }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div #elseBlock class="block py-[30%] text-center h-full">
+            <p class="text-lg">Pas de tâche selectionnée</p>
+          </div>
+
+          <div
+            class="overflow-hidden"
+            [ngClass]="
+              selected_result != undefined ? 'max-h-[500px]' : 'max-h-[10px]'
+            "
+          >
+            <div id="chart-consumption"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

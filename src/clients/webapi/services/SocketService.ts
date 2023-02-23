@@ -25,6 +25,9 @@ export class SocketService {
     });
 
     console.log(this.socket);
+    this.socket.on('jobsstatus', (msg) => console.log(msg));
+
+    this.socket.onAny((msg) => console.log(msg));
   }
 
   public listenAllocatedNodes(): Observable<AllocatedNodesPayload> {

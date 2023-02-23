@@ -1,21 +1,25 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import * as ApexCharts from 'apexcharts'
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
+import * as ApexCharts from 'apexcharts';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-
-type Task = {
-  name: string
-}
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { WebApiService } from '../../clients/webapi';
+import { JobResult } from '../../clients/webapi/models';
 
 @Component({
   selector: 'app-result-view',
   templateUrl: './result-view.component.html',
-  styleUrls: ['./result-view.component.scss']
+  providers: [WebApiService],
+  styleUrls: ['./result-view.component.scss'],
 })
-export class ResultViewComponent implements OnInit {
-
+export class ResultViewComponent implements OnInit, OnDestroy {
   @ViewChild('resultcanvas')
   private canvasRef!: ElementRef;
 
@@ -32,18 +36,16 @@ export class ResultViewComponent implements OnInit {
   private camera!: THREE.PerspectiveCamera;
   private controls!: OrbitControls;
 
-  public tasks: Task[] = [
-    { name: "reconstruction1" },
-    { name: "reconstruction2" },
-    { name: "reconstruction3" }
-  ]
+  public results: JobResult[] = [];
+  public selected = -1;
+  public selected_result: JobResult | undefined = undefined;
 
-  public selected = 0;
+  private handleIntervalRefresh: NodeJS.Timer | undefined = undefined;
 
-  constructor() { }
+  constructor(private webApiService: WebApiService) {}
 
   public clickList(index: number) {
-    this.selected = index
+    this.selected = index;
   }
 
   private get canvas(): HTMLCanvasElement {
@@ -77,7 +79,7 @@ export class ResultViewComponent implements OnInit {
       aspectRatio,
       this.nearClippingPlane,
       this.farClippingPlane
-    )
+    );
     this.camera.position.z = this.cameraZ;
 
     // Light
@@ -89,12 +91,11 @@ export class ResultViewComponent implements OnInit {
     this.scene.add(sunLight);
   }
 
-
   /**
-* Start the rendering loop
-*
-* @private
-*/
+   * Start the rendering loop
+   *
+   * @private
+   */
   private startRenderingLoop() {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
     this.renderer.setPixelRatio(devicePixelRatio);
@@ -105,60 +106,67 @@ export class ResultViewComponent implements OnInit {
     (function render() {
       requestAnimationFrame(render);
       component.renderer.render(component.scene, component.camera);
-    }());
+    })();
   }
 
   private createControls = () => {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableDamping = true
-    this.controls.dampingFactor = 0.04
-    this.controls.enableRotate = true
-    this.controls.enableZoom = true
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.04;
+    this.controls.enableRotate = true;
+    this.controls.enableZoom = true;
     // this.controls.maxPolarAngle = Math.PI /2.5
     this.controls.enablePan = false;
     // this.controls.target.set( 3, 0, -18 );
     // this.controls.maxDistance = 60.0
     // this.controls.minDistance = 10.0
     this.controls.update();
-  }
-
+  };
 
   ngOnInit(): void {
-    const ctx = document.getElementById('chart-consumption') as HTMLCanvasElement;
+    const ctx = document.getElementById(
+      'chart-consumption'
+    ) as HTMLCanvasElement;
 
     var chart = new ApexCharts(ctx, {
       chart: {
         toolbar: {
-          show: false
+          show: false,
         },
         width: '100%',
-        height: "130px",
+        height: '130px',
         type: 'area',
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
-      colors: ["#fbbf24"],
+      colors: ['#fbbf24'],
       stroke: {
         curve: 'smooth',
       },
-      series: [{
-        name: 'sales',
-        data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
-      }],
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-      }
+      series: [
+        {
+          data: [],
+        },
+      ],
     });
 
     chart.render();
   }
 
-
-
   ngAfterViewInit() {
     this.createScene();
     this.startRenderingLoop();
+    this.webApiService.getResults().subscribe((results) => {
+      this.results = results as JobResult[];
+    });
+
+    this.handleIntervalRefresh = setInterval(() => {
+      this.webApiService.getResults();
+    });
   }
 
+  ngOnDestroy() {
+    clearTimeout(this.handleIntervalRefresh);
+  }
 }

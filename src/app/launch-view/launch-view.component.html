@@ -9,7 +9,7 @@
           <h2>Déposer les images</h2>
 
           <div class="w-full h-[55vh] relative bg-gray-200 rounded-xl mt-5 pressed overflow-auto">
-            <input type="file" accept="image/png, image/jpeg" class="absolute w-full h-full opacity-0 cursor-pointer" (change)="onFileSelected($event)" #fileUpload>
+            <input type="file" multiple="multiple" accept="image/png, image/jpeg" class="absolute w-full h-full opacity-0 cursor-pointer" (change)="onFileSelected($event)" #fileUpload>
 
             <div class="relative flex flex-wrap justify-left align-top gap-0">
 

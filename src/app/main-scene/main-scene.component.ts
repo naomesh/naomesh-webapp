@@ -46,12 +46,14 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
     this.socketService
       .listenAllocatedNodes()
       .subscribe((allocatedNodes: AllocatedNodesPayload) => {
+        console.log(allocatedNodes);
         this.allocatedNodes = allocatedNodes;
       });
 
     this.socketService
       .listenJobsStatus()
       .subscribe((jobsStatus: JobStatusPayload) => {
+        console.log(jobsStatus);
         this.jobsStatus = jobsStatus;
       });
 
