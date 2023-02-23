@@ -3,7 +3,7 @@
 /* eslint-disable */
 import { Injectable } from '@angular/core';
 import { Observable, fromEvent } from 'rxjs';
-import { Manager, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 
 import {
@@ -14,12 +14,15 @@ import {
 
 @Injectable()
 export class SocketService {
-  manager: Manager;
   socket: Socket;
 
   constructor() {
-    this.manager = new Manager(environment.WEBAPP_API_URL);
-    this.socket = this.manager.socket('/');
+    this.socket = io(environment.WEBAPP_API_URL, {
+      transports: ['websocket'],
+      upgrade: false,
+    });
+
+    console.log(this.socket);
   }
 
   public listenAllocatedNodes(): Observable<AllocatedNodesPayload> {
