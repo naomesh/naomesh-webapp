@@ -12,12 +12,14 @@ import {
   JobFinishedPayload,
 } from '../models';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class SocketService {
   socket: Socket;
 
   constructor() {
-    this.socket = io(environment.WEBAPP_API_URL, {
+    this.socket = io(environment.WS, {
       transports: ['websocket'],
       upgrade: false,
     });

@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   SEDUCE_API_URL: 'http://lrouret-vm.lille.grid5000.fr:3001',
   WEBAPP_API_URL: 'http://localhost:3000',
+  WS: 'http://localhost:4000',
 };
 
 /*
