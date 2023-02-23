@@ -1,71 +1,65 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
+import { WebApiService } from '../../clients/webapi';
 
 @Component({
   selector: 'app-launch-view',
   templateUrl: './launch-view.component.html',
-  styleUrls: ['./launch-view.component.scss']
+  providers: [WebApiService],
+  styleUrls: ['./launch-view.component.scss'],
 })
 export class LaunchViewComponent implements OnInit, OnDestroy {
-
-  public files: { file: File, src: SafeResourceUrl }[] = [];
-  public priority: number = 0;
+  public files: { file: File; src: SafeResourceUrl }[] = [];
+  public energy: number = 0;
   public quality: number = 0;
-  public idProject: string = "";
+  public idProject: string = '';
 
-  constructor(private readonly sanitizer: DomSanitizer, private router: Router) { }
+  constructor(
+    private readonly sanitizer: DomSanitizer,
+    private router: Router,
+    private webApiService: WebApiService
+  ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.idProject = uuidv4();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     for (const file of this.files) {
-      URL.revokeObjectURL(String(file.src))
+      URL.revokeObjectURL(String(file.src));
     }
   }
 
-  async uploadFiles(): Promise<void> {
+  uploadFiles() {
     if (!this.files) {
-      console.error("No file selected")
-      return
+      console.error('No file selected');
+      return;
     }
 
-    console.log(this.idProject, this.files.map((f) => f.file))
-
-    const formData = new FormData();
-
-    for (const file of this.files.map((f) => f.file)) {
-      formData.append(file.name, file, file.name);
-    }
-
-    console.log(this.idProject,formData)
-
-    await fetch(`${environment.WEBAPP_API_URL}/upload/${this.idProject}`, {
-      method: 'POST',
-      body: formData
-    })
-    .then((res) => {
-      if (res.ok) {
-        this.router.navigate(['/scene/server'])
-      } else {
-        throw new Error(res.statusText);
-      }
-    })
-    .catch((err) => console.error(err))
+    this.webApiService
+      .postStartTask(
+        this.idProject,
+        this.files.map((f) => f.file),
+        ['green', 'bypass'][this.energy],
+        ['good', 'bad'][this.quality]
+      )
+      .subscribe((response) => {
+        this.router.navigate(['/scene/server']);
+      });
   }
 
   filesSize(): string {
-    const size = this.files.map((f) => f.file.size).reduce((acc, val) => acc + val, 0) || 0
+    const size =
+      this.files.map((f) => f.file.size).reduce((acc, val) => acc + val, 0) ||
+      0;
     return (size / 1024 / 1024).toFixed(2);
   }
 
   deleteFile(index: number) {
-    URL.revokeObjectURL(String(this.files[index].src))
-    this.files.splice(index, 1)
+    URL.revokeObjectURL(String(this.files[index].src));
+    this.files.splice(index, 1);
   }
 
   onFileSelected(e: Event): void {
@@ -78,11 +72,10 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
     for (const i in target.files) {
       const file = target.files[i] as File;
 
-      const url = window.URL.createObjectURL(file)
+      const url = window.URL.createObjectURL(file);
       const src = this.sanitizer.bypassSecurityTrustResourceUrl(url);
 
-      this.files.push({ file, src })
+      this.files.push({ file, src });
     }
   }
-
 }

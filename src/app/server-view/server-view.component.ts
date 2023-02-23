@@ -1,29 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import * as ApexCharts from 'apexcharts'
+import * as ApexCharts from 'apexcharts';
 
 type Task = {
-  name: string
-}
+  name: string;
+};
 
 @Component({
   selector: 'app-server-view',
   templateUrl: './server-view.component.html',
-  styleUrls: ['./server-view.component.scss']
+  styleUrls: ['./server-view.component.scss'],
 })
 export class ServerViewComponent implements OnInit {
-
-  constructor() { }
+  constructor() {}
 
   public tasks: Task[] = [
-    { name: "reconstruction1" },
-    { name: "reconstruction2" },
-    { name: "reconstruction3" }
-  ]
+    { name: 'reconstruction1' },
+    { name: 'reconstruction2' },
+    { name: 'reconstruction3' },
+  ];
 
   public selected: number = 0;
+  public consommation_totale: number = 0;
 
   public clickList(index: number) {
-    this.selected = index
+    this.selected = index;
   }
 
   getTasks() {
@@ -31,9 +31,7 @@ export class ServerViewComponent implements OnInit {
     // assign task object
   }
 
-  getConsumptionGraphForTask() {
-    
-  }
+  getConsumptionGraphForTask() {}
 
   ngOnInit(): void {
     const ctx = document.getElementById('chart-server') as HTMLCanvasElement;
@@ -41,29 +39,30 @@ export class ServerViewComponent implements OnInit {
     var chart = new ApexCharts(ctx, {
       chart: {
         toolbar: {
-          show: false
+          show: false,
         },
         width: '100%',
-        height: "400px",
+        height: '400px',
         type: 'area',
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
-      colors: ["#fbbf24"],
+      colors: ['#fbbf24'],
       stroke: {
         curve: 'smooth',
       },
-      series: [{
-        name: 'sales',
-        data: [30,40,35,50,49,60,70,91,125]
-      }],
+      series: [
+        {
+          name: 'sales',
+          data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
+        },
+      ],
       xaxis: {
-        categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
-      }
+        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+      },
     });
 
     chart.render();
   }
-
 }

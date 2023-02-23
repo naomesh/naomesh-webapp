@@ -35,7 +35,10 @@
                 </tbody>
               </table>
             </div>
-            <div class="bg-gray-200 text-xs p-1 bumped">{{tasks.length}} tasks running</div>
+            <div class="relative bg-gray-200 text-xs p-1 bumped">
+              <p>{{tasks.length}} tâche en cours</p>
+              <p class="absolute right-0 top-0 p-1">{{consommation_totale}} KWh</p>
+            </div>
           </div>
 
           <div class="p-5 flex flex-col overflow-auto w-full">

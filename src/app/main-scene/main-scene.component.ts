@@ -1,54 +1,90 @@
 import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router  } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SocketService } from '../../clients/webapi';
+
+import {
+  AllocatedNodesPayload,
+  JobStatusPayload,
+  JobFinishedPayload,
+} from '../../clients/webapi/models';
 
 enum Route {
   HOME = 'home',
   SERVER = 'server',
   LAUNCH = 'launch',
   PANELS = 'panels',
-  RESULT = 'result'
+  RESULT = 'result',
 }
 
 @Component({
   selector: 'app-main-scene',
+  providers: [SocketService],
   templateUrl: './main-scene.component.html',
-  styleUrls: ['./main-scene.component.scss']
+  styleUrls: ['./main-scene.component.scss'],
 })
 export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
-
   public page: Route = Route.HOME;
   private sub: any;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  public allocatedNodes: AllocatedNodesPayload = { nodes: [] };
+  public jobsStatus: JobStatusPayload = {
+    number_of_running_jobs: 0,
+    jobs: [],
+  };
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private socketService: SocketService
+  ) {}
 
   ngOnInit(): void {
-    this.sub = this.route.params.subscribe(params => {
-       this.page = params['page'];
+    this.sub = this.route.params.subscribe((params) => {
+      this.page = params['page'];
     });
+
+    this.socketService
+      .listenAllocatedNodes()
+      .subscribe((allocatedNodes: AllocatedNodesPayload) => {
+        this.allocatedNodes = allocatedNodes;
+      });
+
+    this.socketService
+      .listenJobsStatus()
+      .subscribe((jobsStatus: JobStatusPayload) => {
+        this.jobsStatus = jobsStatus;
+      });
+
+    this.socketService
+      .listenJobsFinished()
+      .subscribe((jobFinished: JobFinishedPayload) => {
+        console.log(jobFinished);
+
+        // TODO: display a popup with "Job finished"
+      });
   }
 
   pageIsHome(): boolean {
-    return this.page == Route.HOME
+    return this.page == Route.HOME;
   }
 
   pageIsServer(): boolean {
-    return this.page == Route.SERVER
+    return this.page == Route.SERVER;
   }
 
   pageIsLaunch(): boolean {
-    return this.page == Route.LAUNCH
+    return this.page == Route.LAUNCH;
   }
 
   pageIsPanels(): boolean {
-    return this.page == Route.PANELS
+    return this.page == Route.PANELS;
   }
 
   pageIsResult(): boolean {
-    return this.page == Route.RESULT
+    return this.page == Route.RESULT;
   }
 
-  ngAfterViewInit(): void {
-  }
+  ngAfterViewInit(): void {}
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
@@ -56,26 +92,25 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
 
   clickLauncher(): void {
     if (this.pageIsHome()) {
-      this.router.navigate(['/scene/launch'])
+      this.router.navigate(['/scene/launch']);
     }
   }
 
   clickPanels(): void {
     if (this.pageIsHome()) {
-      this.router.navigate(['/scene/panels'])
+      this.router.navigate(['/scene/panels']);
     }
   }
 
   clickServer(): void {
     if (this.pageIsHome()) {
-      this.router.navigate(['/scene/server'])
+      this.router.navigate(['/scene/server']);
     }
   }
 
   clickResult(): void {
     if (this.pageIsHome()) {
-      this.router.navigate(['/scene/result'])
+      this.router.navigate(['/scene/result']);
     }
   }
-
 }

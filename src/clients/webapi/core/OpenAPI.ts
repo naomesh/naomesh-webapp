@@ -20,7 +20,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-  BASE: environment.SEDUCE_API_URL,
+  BASE: environment.WEBAPP_API_URL,
   VERSION: '0.0.1',
   WITH_CREDENTIALS: false,
   CREDENTIALS: 'include',
