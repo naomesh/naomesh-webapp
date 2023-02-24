@@ -9,7 +9,7 @@ import * as ApexCharts from 'apexcharts';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 import { WebApiService } from '../../clients/webapi';
 import { JobResult } from '../../clients/webapi/models';
 
@@ -26,12 +26,10 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
 
-  public cameraZ: number = 300;
-  public fieldOfView: number = 1;
+  public cameraZ: number = -20;
+  public fieldOfView: number = -1;
   public nearClippingPlane: number = 1;
   public farClippingPlane: number = 1000;
-
-  private loaderGLTF = new GLTFLoader();
 
   private camera!: THREE.PerspectiveCamera;
   private controls!: OrbitControls;
@@ -42,10 +40,81 @@ export class ResultViewComponent implements OnInit, OnDestroy {
 
   private handleIntervalRefresh: NodeJS.Timer | undefined = undefined;
 
+  public hide_result_canvas = true;
+  public wait_loading_model = false;
+
   constructor(private webApiService: WebApiService) {}
 
   public clickList(index: number) {
     this.selected = index;
+    this.selected_result = this.results[index];
+    this.hide_result_canvas = true;
+    this.wait_loading_model = false;
+  }
+
+  public str2ab(str: string) {
+    var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+    var bufView = new Uint16Array(buf);
+    for (var i = 0, strLen = str.length; i < strLen; i++) {
+      bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+  }
+
+  public async loadModelFromDatas(
+    bufferGeometry: string,
+    bufferTexture: string
+  ) {
+    const plyLoader = new PLYLoader();
+    console.log({ bufferGeometry, bufferTexture });
+
+    const geometryURL = URL.createObjectURL(new Blob([bufferGeometry]));
+    const textureURL = URL.createObjectURL(new Blob([bufferTexture]));
+
+    const geometry = await plyLoader.loadAsync(
+      // 'assets/gtlf/scene_dense_mesh_texture.ply'
+      geometryURL
+    );
+
+    const textureLoader = new THREE.TextureLoader();
+    const texture = await textureLoader.loadAsync(
+      // 'assets/gtlf/scene_dense_mesh_texture.png'
+      textureURL
+    );
+
+    console.log({ geometry, texture });
+
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const mesh = new THREE.Mesh(geometry, material);
+
+    console.log(mesh);
+
+    mesh.geometry.center();
+
+    this.scene.add(mesh);
+    this.wait_loading_model = false;
+  }
+
+  public loadModel() {
+    // if (!this.hide_result_canvas) return;
+    // if (!this.selected_result) return;
+
+    this.hide_result_canvas = false;
+    this.wait_loading_model = true;
+
+    // .getResultData(this.selected_result.job_id)
+
+    this.webApiService
+      .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
+      .subscribe(
+        async (result: any) => {
+          await this.loadModelFromDatas(result.scene, result.texture);
+        },
+        (err) => {
+          this.wait_loading_model = false;
+          console.error(err);
+        }
+      );
   }
 
   private get canvas(): HTMLCanvasElement {
@@ -56,23 +125,18 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     return this.canvas.clientWidth / this.canvas.clientHeight;
   }
 
+  public timestampToHours(timestamp: number) {
+    return (
+      new Date(timestamp).getHours() + 'h' + new Date(timestamp).getMinutes()
+    );
+  }
+
   private createScene() {
-    //* Scene
+    // Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#FFFFFF');
+    this.scene.background = new THREE.Color('#e6e6e6');
 
-    // Load GLTF
-    const dracoLoader = new DRACOLoader();
-
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-    dracoLoader.setDecoderConfig({ type: 'js' });
-    this.loaderGLTF.setDRACOLoader(dracoLoader);
-    this.loaderGLTF.load('assets/gtlf/dragon.glb', (gltf: GLTF) => {
-      let model = gltf.scene;
-      this.scene.add(model);
-    });
-
-    //*Camera
+    // Camera
     let aspectRatio = this.getAspectRatio();
     this.camera = new THREE.PerspectiveCamera(
       this.fieldOfView,
@@ -115,11 +179,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     this.controls.dampingFactor = 0.04;
     this.controls.enableRotate = true;
     this.controls.enableZoom = true;
-    // this.controls.maxPolarAngle = Math.PI /2.5
     this.controls.enablePan = false;
-    // this.controls.target.set( 3, 0, -18 );
-    // this.controls.maxDistance = 60.0
-    // this.controls.minDistance = 10.0
     this.controls.update();
   };
 

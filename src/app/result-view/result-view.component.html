@@ -47,9 +47,46 @@
           </div>
 
           <div
-            [ngClass]="selected_result != undefined ? 'h-[300px] ' : 'h-[1px]'"
-            class="bg-gray-200 overflow-hidden pressed rounded-lg text-gray-500 my-3"
+            [ngClass]="
+              selected_result != undefined ? 'h-[500px] ' : 'h-[500px]'
+            "
+            class="bg-gray-200 relative overflow-hidden pressed rounded-lg text-gray-500 my-3"
           >
+            <div
+              *ngIf="hide_result_canvas || wait_loading_model"
+              class="absolute flex top-0 left-0 w-full h-full bg-slate-300 z-20"
+            >
+              <button
+                *ngIf="hide_result_canvas"
+                class="rounded-full m-auto text-center bg-slate-50 bumped text-sm font-bold px-3 py-1"
+                (click)="loadModel()"
+              >
+                Charger le modèle
+              </button>
+
+              <div *ngIf="wait_loading_model" class="m-auto text-center">
+                <svg
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
             <canvas
               #resultcanvas
               id="result-canvas"
@@ -64,11 +101,17 @@
 
             <div class="flex justify-center">
               <div class="p-3">
-                <p>Lancé à {{ selected_result.start_time }}</p>
-                <p>Fini à {{ selected_result.end_time }}</p>
+                <p>
+                  Lancé à {{ timestampToHours(selected_result.start_time) }}
+                </p>
+                <p>Fini à {{ timestampToHours(selected_result.end_time) }}</p>
                 <p>
                   A durée
-                  {{ selected_result.end_time - selected_result.start_time }}
+                  {{
+                    timestampToHours(
+                      selected_result.end_time - selected_result.start_time
+                    )
+                  }}
                 </p>
               </div>
               <div class="border-r-[1px] border-gray-300"></div>
@@ -82,15 +125,17 @@
             </div>
           </div>
 
-          <div #elseBlock class="block py-[30%] text-center h-full">
+          <div
+            *ngIf="false"
+            #elseBlockk
+            class="block py-[30%] text-center h-full"
+          >
             <p class="text-lg">Pas de tâche selectionnée</p>
           </div>
 
           <div
-            class="overflow-hidden"
-            [ngClass]="
-              selected_result != undefined ? 'max-h-[500px]' : 'max-h-[10px]'
-            "
+            class="overflow-hidden relative"
+            [ngClass]="selected_result != undefined ? 'h-[300px]' : 'h-[1px]'"
           >
             <div id="chart-consumption"></div>
           </div>

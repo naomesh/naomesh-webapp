@@ -19,15 +19,10 @@ export class SocketService {
   socket: Socket;
 
   constructor() {
-    this.socket = io(environment.WS, {
+    this.socket = io(environment.WEBAPP_WS_URL, {
       transports: ['websocket'],
       upgrade: false,
     });
-
-    console.log(this.socket);
-    this.socket.on('jobsstatus', (msg) => console.log(msg));
-
-    this.socket.onAny((msg) => console.log(msg));
   }
 
   public listenAllocatedNodes(): Observable<AllocatedNodesPayload> {

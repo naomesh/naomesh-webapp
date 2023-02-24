@@ -23,7 +23,15 @@ export class ServerViewComponent implements OnInit {
     this.selected_job = this.jobStatus?.jobs[index];
   }
 
-  getConsumptionGraphForTask() {}
+  public timestampToHours(timestamp: number) {
+    return (
+      new Date(timestamp).getHours() + 'h' + new Date(timestamp).getMinutes()
+    );
+  }
+
+  public durationSince(timestamp: number) {
+    return this.timestampToHours(timestamp - new Date().getTime());
+  }
 
   ngOnInit(): void {
     const ctx = document.getElementById('chart-server') as HTMLCanvasElement;
