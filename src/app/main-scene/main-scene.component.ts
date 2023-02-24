@@ -52,6 +52,7 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.socketService.listenJobsStatus().subscribe((jobsStatus: string) => {
       this.jobsStatus = JSON.parse(jobsStatus);
+
       // console.log(this.jobsStatus);
       // console.log(this.jobsStatus);
     });

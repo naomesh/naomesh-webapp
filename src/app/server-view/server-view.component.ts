@@ -7,17 +7,21 @@ import {
 } from '../../clients/webapi/models';
 import { NodeService, DefaultService } from '../../clients/seduce';
 import { copyFile } from 'fs';
+import {SocketService} from "../../clients/webapi";
 
 @Component({
   selector: 'app-server-view',
   templateUrl: './server-view.component.html',
-  providers: [NodeService, DefaultService],
+  providers: [NodeService, DefaultService,SocketService],
   styleUrls: ['./server-view.component.scss'],
 })
 export class ServerViewComponent implements OnInit {
+
+  inc : number = 0;
   constructor(
     private nodeService: NodeService,
-    private defaultService: DefaultService
+    private defaultService: DefaultService,
+    private socketService: SocketService
   ) {}
 
   @Input()
@@ -65,8 +69,10 @@ export class ServerViewComponent implements OnInit {
   }
 
   public loadJobGraphData() {
+    console.log("selected job", this.selected_job)
     this.consommation_totale = 0;
     if (!this.selected_job || this.selected_job.node_id == 'N/A') {
+
       this.chart = new ApexCharts(this.ctx, {
         chart: {
           toolbar: {
@@ -170,6 +176,17 @@ export class ServerViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.ctx = document.getElementById('chart-server') as HTMLCanvasElement;
+    this.socketService.listenJobsStatus().subscribe((jobsStatus: string) => {
+      this.jobsStatus = JSON.parse(jobsStatus);
+      if(this.selected_job){
+        this.inc++;
+        if(this.inc=== 0 || this.inc % 10 == 0){
+          this.loadJobGraphData();
+        }
+
+      }
+
+    });
     this.loadJobGraphData();
   }
 }
