@@ -48,14 +48,13 @@ export interface JobFinishedPayload {
 }
 
 export interface JobResult {
-  result_id: string;
-  name: string;
-  total_comsumption: number;
-  model_obj_hash: string;
-  texture_obj_hash: string;
-  total_production: string;
-  node_id: string;
-  start_time: number;
   end_time: number;
   job_id: string;
+  model_obj_key: string;
+  node_id: string;
+  pictures_quantity: number;
+  start_time: number;
+  texture_obj_key: string;
+  total_consumption_kwh: number;
+  total_production_kwh: number;
 }

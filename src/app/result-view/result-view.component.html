@@ -11,20 +11,25 @@
           <table class="w-full">
             <thead class="sticky top-0 bg-gray-100">
               <tr>
-                <th>Nom de la tâche</th>
+                <th>Tâche</th>
+                <th>Durée</th>
               </tr>
             </thead>
 
             <tbody>
               <tr
                 *ngFor="let result of results; index as i"
-                class="w-full text-center border-t-[1px] cursor-pointer border-gray-300"
+                class="w-full text-sm text-center border-t-[1px] cursor-pointer border-gray-300"
+                (click)="clickList(i)"
+                [ngClass]="selected == i ? 'bg-gray-200' : ''"
               >
-                <td
-                  (click)="clickList(i)"
-                  [ngClass]="selected == i ? 'bg-gray-200' : ''"
-                >
-                  {{ result.name }}
+                <td class="px-0.5 text-center">{{ result.job_id }}</td>
+                <td class="px-0.5 text-center">
+                  {{
+                    timestampToHours(
+                      result.end_time - result.start_time - 60 * 60 * 1000
+                    )
+                  }}
                 </td>
               </tr>
             </tbody>
@@ -42,14 +47,12 @@
           <div *ngIf="selected_result != undefined">
             <p class="text-gray-500">Tâche:</p>
             <p class="font-bold text-2xl mt-[-10px]">
-              {{ selected_result.name }}
+              {{ selected_result.job_id }}
             </p>
           </div>
 
           <div
-            [ngClass]="
-              selected_result != undefined ? 'h-[500px] ' : 'h-[550px]'
-            "
+            [ngClass]="selected_result != undefined ? 'h-[400px] ' : 'h-[0px]'"
             class="bg-gray-200 relative overflow-hidden pressed rounded-lg text-gray-500 my-3"
           >
             <div
@@ -99,8 +102,8 @@
               Utilisez votre souris pour faire tourner l'objet
             </p>
 
-            <div class="flex justify-center">
-              <div class="p-3">
+            <div class="flex justify-center text-sm pt-2">
+              <div class="px-3">
                 <p>
                   Lancé à {{ timestampToHours(selected_result.start_time) }}
                 </p>
@@ -109,18 +112,22 @@
                   A durée
                   {{
                     timestampToHours(
-                      selected_result.end_time - selected_result.start_time
+                      selected_result.end_time -
+                        selected_result.start_time -
+                        60 * 60 * 1000
                     )
                   }}
                 </p>
               </div>
               <div class="border-r-[1px] border-gray-300"></div>
-              <div class="p-3">
+              <div class="px-3">
                 <p>Noeud: {{ selected_result.node_id }}</p>
                 <p>
-                  total_comsumption: {{ selected_result.total_comsumption }}
+                  total_comsumption: {{ selected_result.total_consumption_kwh }}
                 </p>
-                <p>total_production: {{ selected_result.total_production }}</p>
+                <p>
+                  total_production: {{ selected_result.total_production_kwh }}
+                </p>
               </div>
             </div>
           </div>
@@ -133,8 +140,8 @@
           </div>
 
           <div
-            class="overflow-hidden relative"
-            [ngClass]="selected_result != undefined ? 'h-[300px]' : 'h-[0px]'"
+            class="overflow-hidden max-h-[100px] relative"
+            [ngClass]="selected_result != undefined ? 'h-[100px]' : 'h-[0px]'"
           >
             <div id="chart-consumption"></div>
           </div>
