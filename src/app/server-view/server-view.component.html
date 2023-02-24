@@ -4,97 +4,127 @@
     <a routerLink="/scene/home" class="close-button">╳</a>
 
     <div class="bumped rounded-xl my-3 flex flex-row">
-      <div class="p-5 w-[60%]">
+      <div class="relative p-5 w-[60%]">
         <h2>Liste des tâches</h2>
 
         <div class="block overflow-auto mt-5 w-full h-[65vh]">
           <table class="w-full">
             <thead class="sticky top-0 bg-gray-100">
               <tr>
+                <th>Tâche</th>
                 <th>Etat</th>
-                <th>Noeud</th>
+                <th>Etape</th>
                 <th>Photos</th>
                 <th>Durée</th>
                 <th>Politique</th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody class="text-sm">
               <tr
-                *ngFor="let job of jobStatus?.jobs; index as i"
+                *ngFor="let job of jobsStatus?.jobs; index as i"
                 (click)="clickList(i)"
                 [ngClass]="i == selected ? 'bg-gray-200' : ''"
                 class="w-full cursor-pointer border-t-[1px] border-gray-300"
               >
-                <td>
-                  <i class="material-icons text-3xl">{{ job.state }}</i>
+                <td class="px-0.5 text-center">{{ job.job_id }}</td>
+                <td class="px-0.5 text-center">{{ job.state }}</td>
+                <td class="px-0.5 text-center">
+                  {{ job.step_idx }} / {{ nombre_steps }}
                 </td>
-                <td>{{ job.node_id }}</td>
-                <td>x{{ job.pictures_quantity }} photos</td>
-                <td>
+                <td class="px-0.5 text-center">
+                  x{{ job.pictures_quantity }} photos
+                </td>
+                <td class="px-0.5 text-center">
                   {{ durationSince(job.last_started_date) }}
                 </td>
-                <td class="text-center font-2xl">
-                  {{ job.politic.energy == 'green' ? '<i
+                <td class="px-0.5 text-center font-2xl">
+                  <i
+                    *ngIf="job.politic.energy == 'green'"
                     class="material-icons text-lime-500"
                   >
-                    energy_savings_leaf </i
-                  >' : '<i class="material-icons text-orange-400"> bolt </i>' }}
+                    energy_savings_leaf
+                  </i>
+                  <i
+                    *ngIf="job.politic.energy != 'green'"
+                    class="material-icons text-orange-400"
+                  >
+                    bolt
+                  </i>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="relative bg-gray-200 text-xs p-1 bumped">
-          <p>{{ jobStatus?.number_of_running_jobs || "0" }} tâche en cours</p>
-          <p class="absolute right-0 top-0 p-1">
-            {{ consommation_totale }} KWh
+        <div class="absolute bottom-5 w-full bg-gray-200 text-xs p-1 bumped">
+          <p>{{ jobsStatus?.number_of_running_jobs || "0" }} tâche en cours</p>
+          <p class="absolute font-bold right-0 top-0 p-1">
+            total:
+            {{ getTotalNodesConsumption() }}W
           </p>
         </div>
       </div>
 
       <div class="p-5 flex flex-col overflow-auto w-full">
-        <h2>Détails de la tâche</h2>
-
         <div *ngIf="selected_job != undefined">
-          <div class="pt-5 bumped rounded-xl p-5 bg-gray-100">
+          <h2>Détails de la tâche {{ selected_job.job_id }}</h2>
+
+          <div class="pt-5 bumped rounded-xl px-5 bg-gray-100">
             <p class="text-gray-500">Server:</p>
-            <p class="font-bold text-2xl mt-[-10px]">
-              {{ selected_job.job_id }}
+
+            <input
+              class="font-bold bg-transparent text-2xl mt-[-10px]"
+              disabled
+              type="text"
+              [ngModel]="selected_job.node_id"
+              (ngModelChange)="loadJobGraphData()"
+            />
+
+            <p class="text-gray-500 mt-[10px]">Etape:</p>
+            <p class="bg-transparent text-lg">
+              {{ getStepFromIndex(selected_job.step_idx) }}
             </p>
 
-            <div class="bg-gray-200 p-5 rounded-lg text-gray-500 my-10">
+            <div class="bg-gray-200 p-5 text-sm rounded-lg text-gray-500 mt-3">
               <ul>
                 <li>
-                  last_paused_date:
+                  Dernière date de pause:
                   {{ timestampToHours(selected_job.last_paused_date) }}
                 </li>
                 <li>
-                  last_started_date:
+                  Dernière date de démarrage:
                   {{ timestampToHours(selected_job.last_started_date) }}
                 </li>
-                <li>pictures_quantity: {{ selected_job.pictures_quantity }}</li>
-                <li>politic: {{ selected_job.politic }}</li>
-                <li>state: {{ selected_job.state }}</li>
-                <li>step_idx: {{ selected_job.step_idx }}</li>
+                <li>Nombre d'images: {{ selected_job.pictures_quantity }}</li>
+                <li>Politique énergie: {{ selected_job.politic.energy }}</li>
+                <li>Politique qualitée: {{ selected_job.politic.quality }}</li>
               </ul>
             </div>
 
-            <p class="text-gray-500">Consommation en temps réel (KWh)</p>
+            <div class="flex p-3 text-center justify-center">
+              <span class="material-icons text-3xl text-yellow-500">
+                bolt
+              </span>
+              <span class="font-bold text-lg p-1">Consommation totale</span>
+              <span class="font-bold text-xl p-1">
+                {{ consommation_totale }} W
+              </span>
+            </div>
           </div>
         </div>
 
-        <div #elseBlock class="flex m-auto text-center">
+        <div *ngIf="selected_job == undefined" class="flex m-auto text-center">
           <p class="text-lg">Pas de tâche selectionnée</p>
         </div>
 
         <div
-          class="overflow-hidden"
+          class="overflow-hidden pt-3"
           [ngClass]="
-            selected_job != undefined ? 'max-h-[500px]' : 'max-h-[10px]'
+            selected_job != undefined ? 'max-h-[400px]' : 'max-h-[0px]'
           "
         >
-          <div id="chart-server"></div>
+          <p class="text-gray-500">Consommation en temps réel (en Watt)</p>
+          <div id="chart-server" class="min-h-[100px]"></div>
         </div>
       </div>
     </div>

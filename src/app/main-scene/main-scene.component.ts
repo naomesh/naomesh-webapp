@@ -45,23 +45,21 @@ export class MainSceneComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.socketService
       .listenAllocatedNodes()
-      .subscribe((allocatedNodes: AllocatedNodesPayload) => {
-        this.allocatedNodes = allocatedNodes;
+      .subscribe((allocatedNodes: string) => {
+        this.allocatedNodes = JSON.parse(allocatedNodes);
+        // console.log(this.allocatedNodes);
       });
 
-    this.socketService
-      .listenJobsStatus()
-      .subscribe((jobsStatus: JobStatusPayload) => {
-        this.jobsStatus = jobsStatus;
-      });
+    this.socketService.listenJobsStatus().subscribe((jobsStatus: string) => {
+      this.jobsStatus = JSON.parse(jobsStatus);
+      // console.log(this.jobsStatus);
+      // console.log(this.jobsStatus);
+    });
 
-    this.socketService
-      .listenJobsFinished()
-      .subscribe((jobFinished: JobFinishedPayload) => {
-        console.log(jobFinished);
-
-        // TODO: display a popup with "Job finished"
-      });
+    this.socketService.listenJobsFinished().subscribe((jobFinished: string) => {
+      // console.log(jobFinished);
+      // TODO: display a popup with "Job finished"
+    });
   }
 
   pageIsHome(): boolean {

@@ -15,6 +15,7 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
   public energy: number = 0;
   public quality: number = 0;
   public idProject: string = '';
+  public sending_images = false;
 
   constructor(
     private readonly sanitizer: DomSanitizer,
@@ -24,6 +25,7 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.idProject = uuidv4();
+    this.sending_images = false;
   }
 
   ngOnDestroy() {
@@ -33,10 +35,12 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
   }
 
   uploadFiles() {
-    if (!this.files) {
-      console.error('No file selected');
-      return;
-    }
+    console.log('uploadFiles');
+
+    if (this.sending_images) return;
+    if (!this.files?.length) return;
+
+    this.sending_images = true;
 
     this.webApiService
       .postStartTask(
@@ -46,6 +50,7 @@ export class LaunchViewComponent implements OnInit, OnDestroy {
         ['good', 'bad'][this.quality]
       )
       .subscribe((response) => {
+        this.sending_images = false;
         this.router.navigate(['/scene/server']);
       });
   }

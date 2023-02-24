@@ -25,15 +25,15 @@ export class SocketService {
     });
   }
 
-  public listenAllocatedNodes(): Observable<AllocatedNodesPayload> {
+  public listenAllocatedNodes(): Observable<string> {
     return fromEvent(this.socket, 'allocatednodes');
   }
 
-  public listenJobsStatus(): Observable<JobStatusPayload> {
+  public listenJobsStatus(): Observable<string> {
     return fromEvent(this.socket, 'jobsstatus');
   }
 
-  public listenJobsFinished(): Observable<JobFinishedPayload> {
+  public listenJobsFinished(): Observable<string> {
     return fromEvent(this.socket, 'jobsfinished');
   }
 }

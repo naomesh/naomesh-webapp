@@ -97,12 +97,15 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   }
 
   public loadModel() {
-    if (!this.hide_result_canvas) return;
-    if (!this.selected_result) return;
+    // if (!this.hide_result_canvas) return;
+    // if (!this.selected_result) return;
 
     this.hide_result_canvas = false;
     this.wait_loading_model = true;
 
+    this.loadModelFromDatas('', '');
+
+    /*
     this.webApiService
       // .getResultData(this.selected_result.job_id)
       .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
@@ -114,7 +117,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
           this.wait_loading_model = false;
           console.error(err);
         }
-      );
+      );*/
   }
 
   private get canvas(): HTMLCanvasElement {
