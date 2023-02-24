@@ -69,7 +69,6 @@ export class ServerViewComponent implements OnInit {
   }
 
   public loadJobGraphData() {
-    console.log("selected job", this.selected_job)
     this.consommation_totale = 0;
     if (!this.selected_job || this.selected_job.node_id == 'N/A') {
 
@@ -127,7 +126,6 @@ export class ServerViewComponent implements OnInit {
             );
           });
 
-          console.log(this.chartSerieData);
           this.chart = new ApexCharts(this.ctx, {
             chart: {
               toolbar: {
