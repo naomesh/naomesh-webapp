@@ -116,21 +116,26 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     this.hide_result_canvas = false;
     this.wait_loading_model = true;
 
-    // this.loadModelFromDatas('', '');
+    this.loadModelFromDatas('', '');
 
-    this.webApiService
-      .getResultData(this.selected_result.job_id)
-      // .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
-      .subscribe(
-        async (result: any) => {
-          await this.loadModelFromDatas(result.scene, result.texture);
-        },
-        (err) => {
-          this.hide_result_canvas = true;
-          this.wait_loading_model = false;
-          console.error(err);
-        }
-      );
+    // TEMPORARY FIX, extrat job id from string
+    // We should edit the web api to take these paths in params
+    // const project_path = this.selected_result.texture_obj_key
+    //   .split('/')[0]
+    //   .substring(3);
+    // this.webApiService
+    //   .getResultData(project_path)
+    //   // .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
+    //   .subscribe(
+    //     async (result: any) => {
+    //       await this.loadModelFromDatas(result.scene, result.texture);
+    //     },
+    //     (err) => {
+    //       this.hide_result_canvas = true;
+    //       this.wait_loading_model = false;
+    //       console.error(err);
+    //     }
+    //   );
   }
 
   private get canvas(): HTMLCanvasElement {
