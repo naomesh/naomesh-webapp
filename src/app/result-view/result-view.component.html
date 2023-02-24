@@ -47,9 +47,7 @@
           </div>
 
           <div
-            [ngClass]="
-              selected_result != undefined ? 'h-[500px] ' : 'h-[500px]'
-            "
+            [ngClass]="selected_result != undefined ? 'h-[500px] ' : 'h-[0px]'"
             class="bg-gray-200 relative overflow-hidden pressed rounded-lg text-gray-500 my-3"
           >
             <div
@@ -126,16 +124,16 @@
           </div>
 
           <div
-            *ngIf="false"
-            #elseBlockk
-            class="block py-[30%] text-center h-full"
+            *ngIf="selected_result == undefined"
+            #elseBlock
+            class="block text-center h-full"
           >
             <p class="text-lg">Pas de tâche selectionnée</p>
           </div>
 
           <div
             class="overflow-hidden relative"
-            [ngClass]="selected_result != undefined ? 'h-[300px]' : 'h-[1px]'"
+            [ngClass]="selected_result != undefined ? 'h-[300px]' : 'h-[0px]'"
           >
             <div id="chart-consumption"></div>
           </div>
