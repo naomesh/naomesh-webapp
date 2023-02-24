@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import * as ApexCharts from 'apexcharts';
 import {
   JobStatusPayload,
@@ -7,17 +7,16 @@ import {
 } from '../../clients/webapi/models';
 import { NodeService, DefaultService } from '../../clients/seduce';
 import { copyFile } from 'fs';
-import {SocketService} from "../../clients/webapi";
+import { SocketService } from '../../clients/webapi';
 
 @Component({
   selector: 'app-server-view',
   templateUrl: './server-view.component.html',
-  providers: [NodeService, DefaultService,SocketService],
+  providers: [NodeService, DefaultService, SocketService],
   styleUrls: ['./server-view.component.scss'],
 })
-export class ServerViewComponent implements OnInit {
-
-  inc : number = 0;
+export class ServerViewComponent implements OnInit, OnDestroy {
+  inc: number = 0;
   constructor(
     private nodeService: NodeService,
     private defaultService: DefaultService,
@@ -29,6 +28,9 @@ export class ServerViewComponent implements OnInit {
 
   @Input()
   allocatedNodes: AllocatedNodesPayload | undefined = undefined;
+
+  public totalNodesConsumption: number = 0;
+  private handleIntervalRefresh: NodeJS.Timer | undefined = undefined;
 
   private ctx = document.getElementById('chart-server') as HTMLCanvasElement;
   public chart: ApexCharts | undefined = undefined;
@@ -59,19 +61,9 @@ export class ServerViewComponent implements OnInit {
     return this.steps_mapping[index.toString()];
   }
 
-  public getTotalNodesConsumption() {
-    return 0;
-    return this.defaultService
-      .getLiveConsumptionOfAllNodes(this.allocatedNodes?.nodes)
-      .subscribe((result) => {
-        return result;
-      });
-  }
-
   public loadJobGraphData() {
     this.consommation_totale = 0;
     if (!this.selected_job || this.selected_job.node_id == 'N/A') {
-
       this.chart = new ApexCharts(this.ctx, {
         chart: {
           toolbar: {
@@ -93,6 +85,12 @@ export class ServerViewComponent implements OnInit {
             data: [],
           },
         ],
+        xaxis: {
+          type: 'datetime',
+          labels: {
+            datetimeUTC: false,
+          },
+        },
       });
 
       this.chart.render();
@@ -147,6 +145,12 @@ export class ServerViewComponent implements OnInit {
                 data: this.chartSerieData,
               },
             ],
+            xaxis: {
+              type: 'datetime',
+              labels: {
+                datetimeUTC: false,
+              },
+            },
           });
 
           this.chart.render();
@@ -176,15 +180,29 @@ export class ServerViewComponent implements OnInit {
     this.ctx = document.getElementById('chart-server') as HTMLCanvasElement;
     this.socketService.listenJobsStatus().subscribe((jobsStatus: string) => {
       this.jobsStatus = JSON.parse(jobsStatus);
-      if(this.selected_job){
+      if (this.selected_job) {
         this.inc++;
-        if(this.inc=== 0 || this.inc % 10 == 0){
+        if (this.inc === 0 || this.inc % 10 == 0) {
           this.loadJobGraphData();
         }
-
       }
-
     });
     this.loadJobGraphData();
+
+    this.defaultService
+      .getLiveConsumptionOfAllNodes(this.allocatedNodes?.nodes)
+      .subscribe((result) => {
+        this.totalNodesConsumption = result.data || 0;
+      });
+
+    this.handleIntervalRefresh = setInterval(() => {
+      this.defaultService.getLiveConsumptionOfAllNodes(
+        this.allocatedNodes?.nodes
+      );
+    }, 10000);
+  }
+
+  ngOnDestroy() {
+    clearTimeout(this.handleIntervalRefresh);
   }
 }

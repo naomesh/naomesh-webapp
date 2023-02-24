@@ -13,16 +13,24 @@ import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 import { WebApiService } from '../../clients/webapi';
 import { JobResult } from '../../clients/webapi/models';
+import { NodeService, DefaultService } from '../../clients/seduce';
 
 @Component({
   selector: 'app-result-view',
   templateUrl: './result-view.component.html',
-  providers: [WebApiService],
+  providers: [WebApiService, NodeService, DefaultService],
   styleUrls: ['./result-view.component.scss'],
 })
 export class ResultViewComponent implements OnInit, OnDestroy {
   @ViewChild('resultcanvas')
   private canvasRef!: ElementRef;
+
+  private ctx = document.getElementById(
+    'chart-consumption'
+  ) as HTMLCanvasElement;
+  public chart: ApexCharts | undefined = undefined;
+  public consommation_totale: number = 0;
+  private chartSerieData: any[] = [];
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
@@ -44,13 +52,18 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   public hide_result_canvas = true;
   public wait_loading_model = false;
 
-  constructor(private webApiService: WebApiService) {}
+  constructor(
+    private webApiService: WebApiService,
+    private nodeService: NodeService,
+    private defaultService: DefaultService
+  ) {}
 
   public clickList(index: number) {
     this.selected = index;
     this.selected_result = this.results[index];
     this.hide_result_canvas = true;
     this.wait_loading_model = false;
+    this.loadJobGraphData();
   }
 
   public str2ab(str: string) {
@@ -73,14 +86,14 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     const textureURL = URL.createObjectURL(new Blob([bufferTexture]));
 
     const geometry = await plyLoader.loadAsync(
-      'assets/gtlf/scene_dense_mesh_texture.ply'
-      // geometryURL
+      // 'assets/gtlf/scene_dense_mesh_texture.ply'
+      geometryURL
     );
 
     const textureLoader = new THREE.TextureLoader();
     const texture = await textureLoader.loadAsync(
-      'assets/gtlf/scene_dense_mesh_texture.png'
-      // textureURL
+      // 'assets/gtlf/scene_dense_mesh_texture.png'
+      textureURL
     );
 
     console.log({ geometry, texture });
@@ -97,27 +110,27 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   }
 
   public loadModel() {
-    // if (!this.hide_result_canvas) return;
-    // if (!this.selected_result) return;
+    if (!this.hide_result_canvas) return;
+    if (!this.selected_result) return;
 
     this.hide_result_canvas = false;
     this.wait_loading_model = true;
 
-    this.loadModelFromDatas('', '');
+    // this.loadModelFromDatas('', '');
 
-    /*
     this.webApiService
-      // .getResultData(this.selected_result.job_id)
-      .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
+      .getResultData(this.selected_result.job_id)
+      // .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
       .subscribe(
         async (result: any) => {
           await this.loadModelFromDatas(result.scene, result.texture);
         },
         (err) => {
+          this.hide_result_canvas = true;
           this.wait_loading_model = false;
           console.error(err);
         }
-      );*/
+      );
   }
 
   private get canvas(): HTMLCanvasElement {
@@ -126,6 +139,101 @@ export class ResultViewComponent implements OnInit, OnDestroy {
 
   private getAspectRatio() {
     return this.canvas.clientWidth / this.canvas.clientHeight;
+  }
+
+  public loadJobGraphData() {
+    this.consommation_totale = 0;
+    if (!this.selected_result) {
+      this.chart = new ApexCharts(this.ctx, {
+        chart: {
+          toolbar: {
+            show: false,
+          },
+          width: '100%',
+          height: '130px',
+          type: 'area',
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        colors: ['#fbbf24'],
+        stroke: {
+          curve: 'smooth',
+        },
+        series: [
+          {
+            data: [],
+          },
+        ],
+        xaxis: {
+          type: 'datetime',
+          labels: {
+            datetimeUTC: false,
+          },
+        },
+      });
+
+      this.chart.render();
+      return;
+    }
+
+    this.nodeService
+      .getConsumptionOfNodeHistorical(
+        this.selected_result.node_id,
+        500,
+        `${this.selected_result.start_time}:${this.selected_result.end_time}`
+      )
+      .subscribe((response) => {
+        if (response.sum != null && response.data != undefined) {
+          this.consommation_totale = response.sum;
+          const dataRange = response.data[0];
+          if (dataRange.data == undefined) return;
+
+          dataRange.data.forEach((data) => {
+            let timeFormat = new Date(data[0]);
+            this.chartSerieData?.push({
+              x: timeFormat,
+              y: Math.floor(data[1]),
+            });
+            this.chartSerieData?.sort((p1, p2) =>
+              p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
+            );
+          });
+
+          console.log(this.ctx);
+
+          this.chart = new ApexCharts(this.ctx, {
+            chart: {
+              toolbar: {
+                show: false,
+              },
+              width: '100%',
+              height: '130px',
+              type: 'area',
+            },
+            dataLabels: {
+              enabled: false,
+            },
+            colors: ['#fbbf24'],
+            stroke: {
+              curve: 'smooth',
+            },
+            series: [
+              {
+                data: this.chartSerieData,
+              },
+            ],
+            xaxis: {
+              type: 'datetime',
+              labels: {
+                datetimeUTC: false,
+              },
+            },
+          });
+
+          this.chart.render();
+        }
+      });
   }
 
   public timestampToHours(timestamp: number) {
@@ -187,34 +295,10 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    const ctx = document.getElementById(
+    this.ctx = document.getElementById(
       'chart-consumption'
     ) as HTMLCanvasElement;
-
-    var chart = new ApexCharts(ctx, {
-      chart: {
-        toolbar: {
-          show: false,
-        },
-        width: '100%',
-        height: '130px',
-        type: 'area',
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      colors: ['#fbbf24'],
-      stroke: {
-        curve: 'smooth',
-      },
-      series: [
-        {
-          data: [],
-        },
-      ],
-    });
-
-    chart.render();
+    this.loadJobGraphData();
   }
 
   ngAfterViewInit() {
@@ -235,7 +319,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
 
     this.handleIntervalRefresh = setInterval(() => {
       this.webApiService.getResults();
-    });
+    }, 10000);
   }
 
   ngOnDestroy() {
