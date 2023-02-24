@@ -53,7 +53,7 @@
 
           <div
             [ngClass]="selected_result != undefined ? 'h-[400px] ' : 'h-[0px]'"
-            class="bg-gray-200 relative overflow-hidden pressed rounded-lg text-gray-500 my-3"
+            class="bg-gray-200 relative block h-full w-full overflow-hidden pressed rounded-lg text-gray-500 my-3"
           >
             <div
               *ngIf="hide_result_canvas || wait_loading_model"
@@ -93,7 +93,7 @@
             <canvas
               #resultcanvas
               id="result-canvas"
-              class="h-full w-full"
+              class="h-full w-full min-h-[500px]"
             ></canvas>
           </div>
 
@@ -123,7 +123,7 @@
               <div class="px-3">
                 <p>Noeud: {{ selected_result.node_id }}</p>
                 <p>
-                  total_comsumption: {{ selected_result.total_consumption_kwh }}
+                  total_consumption: {{ selected_result.total_consumption_kwh }}
                 </p>
                 <p>
                   total_production: {{ selected_result.total_production_kwh }}
