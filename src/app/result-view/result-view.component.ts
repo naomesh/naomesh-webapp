@@ -220,8 +220,17 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.createScene();
     this.startRenderingLoop();
-    this.webApiService.getResults().subscribe((results) => {
-      this.results = results as JobResult[];
+    this.webApiService.getResults().subscribe((results: any) => {
+      this.results = results.map((res: Object) => {
+        return {
+          ...res,
+          //@ts-ignore
+          start_time: new Date(res?.start_time).getTime(),
+          //@ts-ignore
+          end_time: new Date(res?.end_time).getTime(),
+        } as JobResult;
+      });
+      console.log(this.results);
     });
 
     this.handleIntervalRefresh = setInterval(() => {
