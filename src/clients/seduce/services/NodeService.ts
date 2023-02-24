@@ -92,7 +92,7 @@ data?: Array<Array<number>>;
     public getConsumptionOfNodeHistorical(
 nodeId: string,
 step: number = 500,
-range?: Array<string>,
+range?: string,
 ): Observable<{
 name?: string;
 unit?: string;
