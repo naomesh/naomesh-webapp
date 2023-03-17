@@ -51,6 +51,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
 
   public hide_result_canvas = true;
   public wait_loading_model = false;
+  public wait_loading_graph = false;
 
   constructor(
     private webApiService: WebApiService,
@@ -63,6 +64,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     this.selected_result = this.results[index];
     this.hide_result_canvas = true;
     this.wait_loading_model = false;
+    this.wait_loading_graph = false;
     this.loadJobGraphData();
   }
 
@@ -73,6 +75,49 @@ export class ResultViewComponent implements OnInit, OnDestroy {
       bufView[i] = str.charCodeAt(i);
     }
     return buf;
+  }
+
+  public prepareGraph() {
+    this.chart = new ApexCharts(this.ctx, {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+        width: '100%',
+        height: '200px',
+        type: 'area',
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      colors: ['#fbbf24'],
+      stroke: {
+        curve: 'smooth',
+      },
+      series: [
+        {
+          data: [],
+        },
+      ],
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          datetimeUTC: false,
+        },
+      },
+    });
+  }
+
+  public updateGraph() {
+    if (!this.chart) return;
+
+    this.chart.updateSeries([
+      {
+        data: this.chartSerieData,
+      },
+    ]);
+
+    this.chart.render();
   }
 
   public async loadModelFromDatas(
@@ -147,96 +192,47 @@ export class ResultViewComponent implements OnInit, OnDestroy {
   }
 
   public loadJobGraphData() {
+    this.chartSerieData = [];
     this.consommation_totale = 0;
-    if (!this.selected_result) {
-      this.chart = new ApexCharts(this.ctx, {
-        chart: {
-          toolbar: {
-            show: false,
-          },
-          width: '100%',
-          height: '130px',
-          type: 'area',
-        },
-        dataLabels: {
-          enabled: false,
-        },
-        colors: ['#fbbf24'],
-        stroke: {
-          curve: 'smooth',
-        },
-        series: [
-          {
-            data: [],
-          },
-        ],
-        xaxis: {
-          type: 'datetime',
-          labels: {
-            datetimeUTC: false,
-          },
-        },
-      });
 
-      this.chart.render();
+    if (!this.chart) {
+      this.prepareGraph();
+    }
+
+    if (!this.selected_result) {
+      this.updateGraph();
       return;
     }
 
+    this.wait_loading_graph = true;
     this.nodeService
       .getConsumptionOfNodeHistorical(
         this.selected_result.node_id,
-        500,
+        10000,
         `${this.selected_result.start_time}:${this.selected_result.end_time}`
       )
       .subscribe((response) => {
         if (response.sum != null && response.data != undefined) {
           this.consommation_totale = response.sum;
+
           const dataRange = response.data[0];
           if (dataRange.data == undefined) return;
 
           dataRange.data.forEach((data) => {
             let timeFormat = new Date(data[0]);
+
             this.chartSerieData?.push({
               x: timeFormat,
               y: Math.floor(data[1]),
             });
+
             this.chartSerieData?.sort((p1, p2) =>
               p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
             );
           });
 
-          console.log(this.ctx);
-
-          this.chart = new ApexCharts(this.ctx, {
-            chart: {
-              toolbar: {
-                show: false,
-              },
-              width: '100%',
-              height: '130px',
-              type: 'area',
-            },
-            dataLabels: {
-              enabled: false,
-            },
-            colors: ['#fbbf24'],
-            stroke: {
-              curve: 'smooth',
-            },
-            series: [
-              {
-                data: this.chartSerieData,
-              },
-            ],
-            xaxis: {
-              type: 'datetime',
-              labels: {
-                datetimeUTC: false,
-              },
-            },
-          });
-
-          this.chart.render();
+          this.updateGraph();
+          this.wait_loading_graph = false;
         }
       });
   }
@@ -303,6 +299,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     this.ctx = document.getElementById(
       'chart-consumption'
     ) as HTMLCanvasElement;
+
     this.loadJobGraphData();
   }
 

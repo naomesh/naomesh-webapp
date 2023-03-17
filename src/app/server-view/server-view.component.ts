@@ -38,6 +38,7 @@ export class ServerViewComponent implements OnInit, OnDestroy {
   public selected_job: Job | undefined = undefined;
   public consommation_totale: number = 0;
   private chartSerieData: any[] = [];
+  public wait_loading_graph = false;
 
   public nombre_steps = '15';
   public steps_mapping = {
@@ -61,47 +62,73 @@ export class ServerViewComponent implements OnInit, OnDestroy {
     return this.steps_mapping[index.toString()];
   }
 
-  public loadJobGraphData() {
-    this.consommation_totale = 0;
-    if (!this.selected_job || this.selected_job.node_id == 'N/A') {
-      this.chart = new ApexCharts(this.ctx, {
-        chart: {
-          toolbar: {
-            show: false,
-          },
-          width: '100%',
-          height: '400px',
-          type: 'area',
+  public prepareGraph() {
+    this.chart = new ApexCharts(this.ctx, {
+      chart: {
+        toolbar: {
+          show: false,
         },
-        dataLabels: {
-          enabled: false,
+        width: '100%',
+        height: '300px',
+        type: 'area',
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      colors: ['#fbbf24'],
+      stroke: {
+        curve: 'smooth',
+      },
+      series: [
+        {
+          data: [],
         },
-        colors: ['#fbbf24'],
-        stroke: {
-          curve: 'smooth',
+      ],
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          datetimeUTC: false,
         },
-        series: [
-          {
-            data: [],
-          },
-        ],
-        xaxis: {
-          type: 'datetime',
-          labels: {
-            datetimeUTC: false,
-          },
-        },
-      });
+      },
+    });
+  }
 
-      this.chart.render();
+  public updateGraph() {
+    if (!this.chart) return;
+
+    this.chart.updateSeries([
+      {
+        data: this.chartSerieData,
+      },
+    ]);
+
+    this.chart.render();
+  }
+
+  public loadJobGraphData() {
+    this.chartSerieData = [];
+    this.consommation_totale = 0;
+
+    if (!this.chart) {
+      this.prepareGraph();
+    }
+
+    if (
+      !this.selected_job ||
+      !this.selected_job.node_id ||
+      this.selected_job.node_id == 'N/A'
+    ) {
+      this.updateGraph();
       return;
     }
 
+    this.wait_loading_graph = true;
     this.nodeService
       .getConsumptionOfNodeHistorical(
         this.selected_job.node_id,
-        500,
-        `${this.selected_job.last_started_date}:${
+        2000,
+        // `${this.selected_job.last_started_date}:${
+        `${new Date().getTime() - 5 * 60 * 1000}:${
           this.selected_job.state == 'running'
             ? new Date().getTime()
             : this.selected_job.last_paused_date
@@ -111,6 +138,7 @@ export class ServerViewComponent implements OnInit, OnDestroy {
         if (response.sum != null && response.data != undefined) {
           this.consommation_totale = response.sum;
           const dataRange = response.data[0];
+
           if (dataRange.data == undefined) return;
 
           dataRange.data.forEach((data) => {
@@ -119,47 +147,21 @@ export class ServerViewComponent implements OnInit, OnDestroy {
               x: timeFormat,
               y: Math.floor(data[1]),
             });
+
             this.chartSerieData?.sort((p1, p2) =>
               p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
             );
           });
 
-          this.chart = new ApexCharts(this.ctx, {
-            chart: {
-              toolbar: {
-                show: false,
-              },
-              width: '100%',
-              height: '400px',
-              type: 'area',
-            },
-            dataLabels: {
-              enabled: false,
-            },
-            colors: ['#fbbf24'],
-            stroke: {
-              curve: 'smooth',
-            },
-            series: [
-              {
-                data: this.chartSerieData,
-              },
-            ],
-            xaxis: {
-              type: 'datetime',
-              labels: {
-                datetimeUTC: false,
-              },
-            },
-          });
-
-          this.chart.render();
+          this.updateGraph();
+          this.wait_loading_graph = false;
         }
       });
   }
 
   public clickList(index: number) {
     this.selected = index;
+    this.wait_loading_graph = false;
     this.selected_job = this.jobsStatus?.jobs[index];
     this.loadJobGraphData();
   }
@@ -176,29 +178,33 @@ export class ServerViewComponent implements OnInit, OnDestroy {
     );
   }
 
+  public refreshNodesConsumption() {
+    if (this.allocatedNodes?.nodes?.length != 0) {
+      this.defaultService
+        .getLiveConsumptionOfAllNodes(this.allocatedNodes?.nodes)
+        .subscribe((result) => {
+          this.totalNodesConsumption = result.data || 0;
+        });
+    }
+  }
+
   ngOnInit(): void {
     this.ctx = document.getElementById('chart-server') as HTMLCanvasElement;
-    this.socketService.listenJobsStatus().subscribe((jobsStatus: string) => {
-      this.jobsStatus = JSON.parse(jobsStatus);
-      if (this.selected_job) {
-        this.inc++;
-        if (this.inc === 0 || this.inc % 10 == 0) {
-          this.loadJobGraphData();
-        }
-      }
-    });
+    // this.socketService.listenJobsStatus().subscribe((jobsStatus: string) => {
+    //   this.jobsStatus = JSON.parse(jobsStatus);
+    //   if (this.selected_job) {
+    //     this.inc++;
+    //     if (this.inc === 0 || this.inc % 10 == 0) {
+    //       this.loadJobGraphData();
+    //     }
+    //   }
+    // });
     this.loadJobGraphData();
 
-    this.defaultService
-      .getLiveConsumptionOfAllNodes(this.allocatedNodes?.nodes)
-      .subscribe((result) => {
-        this.totalNodesConsumption = result.data || 0;
-      });
+    this.refreshNodesConsumption();
 
     this.handleIntervalRefresh = setInterval(() => {
-      this.defaultService.getLiveConsumptionOfAllNodes(
-        this.allocatedNodes?.nodes
-      );
+      this.refreshNodesConsumption();
     }, 10000);
   }
 
