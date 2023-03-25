@@ -147,11 +147,11 @@ export class ServerViewComponent implements OnInit, OnDestroy {
               x: timeFormat,
               y: Math.floor(data[1]),
             });
-
-            this.chartSerieData?.sort((p1, p2) =>
-              p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
-            );
           });
+
+          this.chartSerieData?.sort((p1, p2) =>
+            p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
+          );
 
           this.updateGraph();
           this.wait_loading_graph = false;

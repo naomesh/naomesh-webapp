@@ -127,19 +127,23 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     const plyLoader = new PLYLoader();
     console.log({ bufferGeometry, bufferTexture });
 
-    // const geometryURL = URL.createObjectURL(new Blob([bufferGeometry]));
-    // const textureURL = URL.createObjectURL(new Blob([bufferTexture]));
+    const geometryURL = URL.createObjectURL(new Blob([bufferGeometry]));
+    const textureURL = URL.createObjectURL(new Blob([bufferTexture]));
 
-    const geometry = await plyLoader.loadAsync(
+    const geometry = await plyLoader.loadAsync(geometryURL);
+    const localGeometry = await plyLoader.loadAsync(
       'assets/gtlf/scene_dense_mesh_texture.ply'
-      // geometryURL
     );
+    console.log(geometry, localGeometry);
 
     const textureLoader = new THREE.TextureLoader();
-    const texture = await textureLoader.loadAsync(
+
+    const texture = await textureLoader.loadAsync(textureURL);
+    const localTexture = await textureLoader.loadAsync(
       'assets/gtlf/scene_dense_mesh_texture.png'
-      // textureURL
     );
+
+    console.log(texture, localTexture);
 
     console.log({ geometry, texture });
 
@@ -161,26 +165,25 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     this.hide_result_canvas = false;
     this.wait_loading_model = true;
 
-    this.loadModelFromDatas('', '');
+    // this.loadModelFromDatas('', '');
 
     // TEMPORARY FIX, extrat job id from string
     // We should edit the web api to take these paths in params
-    // const project_path = this.selected_result.texture_obj_key
-    //   .split('/')[0]
-    //   .substring(3);
-    // this.webApiService
-    //   .getResultData(project_path)
-    //   // .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
-    //   .subscribe(
-    //     async (result: any) => {
-    //       await this.loadModelFromDatas(result.scene, result.texture);
-    //     },
-    //     (err) => {
-    //       this.hide_result_canvas = true;
-    //       this.wait_loading_model = false;
-    //       console.error(err);
-    //     }
-    //   );
+    const project_path = this.selected_result.model_obj_key.split('/')[1];
+
+    this.webApiService
+      .getResultData(project_path)
+      // .getResultData('f64b17e2-e1e8-41f5-82ba-122eb64ab544')
+      .subscribe(
+        async (result: any) => {
+          await this.loadModelFromDatas(result.scene, result.texture);
+        },
+        (err) => {
+          this.hide_result_canvas = true;
+          this.wait_loading_model = false;
+          console.error(err);
+        }
+      );
   }
 
   private get canvas(): HTMLCanvasElement {
@@ -213,10 +216,12 @@ export class ResultViewComponent implements OnInit, OnDestroy {
       )
       .subscribe((response) => {
         if (response.sum != null && response.data != undefined) {
-          this.consommation_totale = response.sum.toFixed(2);
-
           const dataRange = response.data[0];
           if (dataRange.data == undefined) return;
+
+          this.consommation_totale = (
+            response.sum / dataRange.data.length
+          ).toFixed(2);
 
           dataRange.data.forEach((data) => {
             let timeFormat = new Date(data[0]);
@@ -225,11 +230,11 @@ export class ResultViewComponent implements OnInit, OnDestroy {
               x: timeFormat,
               y: Math.floor(data[1]),
             });
-
-            this.chartSerieData?.sort((p1, p2) =>
-              p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
-            );
           });
+
+          this.chartSerieData?.sort((p1, p2) =>
+            p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0
+          );
 
           this.updateGraph();
           this.wait_loading_graph = false;
@@ -316,7 +321,6 @@ export class ResultViewComponent implements OnInit, OnDestroy {
           end_time: new Date(res?.end_time).getTime(),
         } as JobResult;
       });
-      console.log(this.results);
     });
 
     this.handleIntervalRefresh = setInterval(() => {
