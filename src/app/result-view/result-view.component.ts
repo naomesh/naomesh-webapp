@@ -29,7 +29,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     'chart-consumption'
   ) as HTMLCanvasElement;
   public chart: ApexCharts | undefined = undefined;
-  public consommation_totale: number = 0;
+  public consommation_totale: string = '0';
   private chartSerieData: any[] = [];
 
   private renderer!: THREE.WebGLRenderer;
@@ -84,7 +84,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
           show: false,
         },
         width: '100%',
-        height: '200px',
+        height: '170px',
         type: 'area',
       },
       dataLabels: {
@@ -127,18 +127,18 @@ export class ResultViewComponent implements OnInit, OnDestroy {
     const plyLoader = new PLYLoader();
     console.log({ bufferGeometry, bufferTexture });
 
-    const geometryURL = URL.createObjectURL(new Blob([bufferGeometry]));
-    const textureURL = URL.createObjectURL(new Blob([bufferTexture]));
+    // const geometryURL = URL.createObjectURL(new Blob([bufferGeometry]));
+    // const textureURL = URL.createObjectURL(new Blob([bufferTexture]));
 
     const geometry = await plyLoader.loadAsync(
-      // 'assets/gtlf/scene_dense_mesh_texture.ply'
-      geometryURL
+      'assets/gtlf/scene_dense_mesh_texture.ply'
+      // geometryURL
     );
 
     const textureLoader = new THREE.TextureLoader();
     const texture = await textureLoader.loadAsync(
-      // 'assets/gtlf/scene_dense_mesh_texture.png'
-      textureURL
+      'assets/gtlf/scene_dense_mesh_texture.png'
+      // textureURL
     );
 
     console.log({ geometry, texture });
@@ -193,7 +193,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
 
   public loadJobGraphData() {
     this.chartSerieData = [];
-    this.consommation_totale = 0;
+    this.consommation_totale = '0';
 
     if (!this.chart) {
       this.prepareGraph();
@@ -213,7 +213,7 @@ export class ResultViewComponent implements OnInit, OnDestroy {
       )
       .subscribe((response) => {
         if (response.sum != null && response.data != undefined) {
-          this.consommation_totale = response.sum;
+          this.consommation_totale = response.sum.toFixed(2);
 
           const dataRange = response.data[0];
           if (dataRange.data == undefined) return;
